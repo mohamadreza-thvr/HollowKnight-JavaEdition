@@ -1,23 +1,24 @@
 package com.hallowKnight.Menus;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.hallowKnight.Menus.mainMenu.MainMenuController;
 
 public class MainMenuScreen implements Screen {
     private MainMenuModel model;
     private MainMenuView view;
     private MainMenuController controller;
 
-    public MainMenuScreen() {
+    public MainMenuScreen(Game game) {
         model = new MainMenuModel();
         view = new MainMenuView();
-        controller = new MainMenuController(model, view);
+        controller = new MainMenuController(model, view, game);
     }
 
     @Override
     public void show() {
-        // متصل کردن ورودی‌ها به Stage
         Gdx.input.setInputProcessor(view.getStage());
     }
 

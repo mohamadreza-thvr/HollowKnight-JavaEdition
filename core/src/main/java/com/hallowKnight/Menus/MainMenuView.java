@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hallowKnight.UIManager;
 
@@ -23,7 +24,7 @@ public class MainMenuView {
     private TextButton quitButton;
 
     public MainMenuView() {
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FitViewport(1280, 720));
 
         backgroundTexture = new Texture(Gdx.files.internal("MainMenu.png"));
         backgroundImage = new Image(backgroundTexture);

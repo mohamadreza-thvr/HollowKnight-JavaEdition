@@ -17,7 +17,7 @@ public class Main extends Game {
     public void create() {
         batch = new SpriteBatch();
         image = new Texture("libgdx.png");
-        mainMenuScreen = new MainMenuScreen();
+        mainMenuScreen = new MainMenuScreen(this);
         setScreen(mainMenuScreen);
     }
 

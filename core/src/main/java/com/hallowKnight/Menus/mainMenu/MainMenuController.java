@@ -1,17 +1,23 @@
-package com.hallowKnight.Menus;
+package com.hallowKnight.Menus.mainMenu;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.hallowKnight.Menus.MainMenuModel;
+import com.hallowKnight.Menus.MainMenuView;
+import com.hallowKnight.startGameMenu.StartGameScreen;
 
 public class MainMenuController {
     private MainMenuModel model;
     private MainMenuView view;
+    private Game game;
 
-    public MainMenuController(MainMenuModel model, MainMenuView view) {
+    public MainMenuController(MainMenuModel model, MainMenuView view, Game game) {
         this.model = model;
         this.view = view;
+        this.game = game;
 
         setupListeners();
     }
@@ -34,7 +40,7 @@ public class MainMenuController {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Start Game!");
+                game.setScreen(new StartGameScreen(game));
             }
         });
 
