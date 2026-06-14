@@ -1,4 +1,4 @@
-package com.hallowKnight.startGameMenu;
+package com.hallowKnight.Menus.startGameMenu;
 
 import java.util.ArrayList;
 import java.util.List;

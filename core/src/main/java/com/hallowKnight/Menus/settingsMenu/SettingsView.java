@@ -1,7 +1,6 @@
-package com.hallowKnight.settingsMenu;
+package com.hallowKnight.Menus.settingsMenu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;

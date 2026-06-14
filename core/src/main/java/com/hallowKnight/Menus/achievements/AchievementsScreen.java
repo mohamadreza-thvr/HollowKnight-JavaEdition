@@ -1,21 +1,21 @@
-package com.hallowKnight.settingsMenu;
+package com.hallowKnight.Menus.achievements;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 
-public class SettingsScreen implements Screen {
-    private SettingsModel model;
-    private SettingsView view;
-    private SettingsController controller;
+public class AchievementsScreen implements Screen {
+    private AchievementsModel model;
+    private AchievementsView view;
+    private AchievementsController controller;
     private Game game;
 
-    public SettingsScreen(Game game) {
-        model = new SettingsModel();
-        view = new SettingsView(model);
+    public AchievementsScreen(Game game) {
+        model = new AchievementsModel();
+        view = new AchievementsView(model);
         this.game = game;
-        controller = new SettingsController(model, view, game);
+        controller = new AchievementsController(model, view, game);
     }
 
     @Override

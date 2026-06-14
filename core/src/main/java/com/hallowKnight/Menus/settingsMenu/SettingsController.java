@@ -1,4 +1,4 @@
-package com.hallowKnight.settingsMenu;
+package com.hallowKnight.Menus.settingsMenu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Color;

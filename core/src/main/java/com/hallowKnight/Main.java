@@ -3,6 +3,7 @@ package com.hallowKnight;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hallowKnight.Menus.achievements.AchievementsScreen;
 import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */

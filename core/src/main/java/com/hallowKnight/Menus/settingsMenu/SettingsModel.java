@@ -1,4 +1,4 @@
-package com.hallowKnight.settingsMenu;
+package com.hallowKnight.Menus.settingsMenu;
 
 public class SettingsModel {
     private float musicVolume;

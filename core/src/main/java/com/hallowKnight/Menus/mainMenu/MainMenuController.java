@@ -5,8 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.hallowKnight.settingsMenu.SettingsScreen;
-import com.hallowKnight.startGameMenu.StartGameScreen;
+import com.hallowKnight.Menus.achievements.AchievementsScreen;
+import com.hallowKnight.Menus.settingsMenu.SettingsScreen;
+import com.hallowKnight.Menus.startGameMenu.StartGameScreen;
 
 public class MainMenuController {
     private MainMenuModel model;
@@ -47,6 +48,13 @@ public class MainMenuController {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new SettingsScreen(game));
+            }
+        });
+
+        view.getAchievementsButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new AchievementsScreen(game));
             }
         });
 
