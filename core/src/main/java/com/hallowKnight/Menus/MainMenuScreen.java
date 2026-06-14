@@ -1,0 +1,50 @@
+package com.hallowKnight.Menus;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
+
+public class MainMenuScreen implements Screen {
+    private MainMenuModel model;
+    private MainMenuView view;
+    private MainMenuController controller;
+
+    public MainMenuScreen() {
+        model = new MainMenuModel();
+        view = new MainMenuView();
+        controller = new MainMenuController(model, view);
+    }
+
+    @Override
+    public void show() {
+        // متصل کردن ورودی‌ها به Stage
+        Gdx.input.setInputProcessor(view.getStage());
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        view.render(delta);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        view.getStage().getViewport().update(width, height, true);
+    }
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
+
+    @Override
+    public void dispose() {
+        view.dispose();
+    }
+}
