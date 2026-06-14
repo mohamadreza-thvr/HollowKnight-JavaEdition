@@ -5,8 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.hallowKnight.Menus.MainMenuModel;
-import com.hallowKnight.Menus.MainMenuView;
+import com.hallowKnight.settingsMenu.SettingsScreen;
 import com.hallowKnight.startGameMenu.StartGameScreen;
 
 public class MainMenuController {
@@ -47,7 +46,7 @@ public class MainMenuController {
         view.getSettingsButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Opening Settings...");
+                game.setScreen(new SettingsScreen(game));
             }
         });
 

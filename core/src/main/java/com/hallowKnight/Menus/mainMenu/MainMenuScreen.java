@@ -1,10 +1,9 @@
-package com.hallowKnight.Menus;
+package com.hallowKnight.Menus.mainMenu;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.hallowKnight.Menus.mainMenu.MainMenuController;
 
 public class MainMenuScreen implements Screen {
     private MainMenuModel model;

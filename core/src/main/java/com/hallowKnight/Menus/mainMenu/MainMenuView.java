@@ -1,4 +1,4 @@
-package com.hallowKnight.Menus;
+package com.hallowKnight.Menus.mainMenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,8 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.hallowKnight.UIManager;
 
 public class MainMenuView {
@@ -24,7 +23,7 @@ public class MainMenuView {
     private TextButton quitButton;
 
     public MainMenuView() {
-        stage = new Stage(new FitViewport(1280, 720));
+        stage = new Stage(new ExtendViewport(1280, 720));
 
         backgroundTexture = new Texture(Gdx.files.internal("MainMenu.png"));
         backgroundImage = new Image(backgroundTexture);
@@ -55,7 +54,6 @@ public class MainMenuView {
 
         stage.addActor(table);
 
-        // اضافه کردن جدول دکمه‌ها روی استیج (و در نتیجه روی پس‌زمینه)
         stage.addActor(table);
     }
 
