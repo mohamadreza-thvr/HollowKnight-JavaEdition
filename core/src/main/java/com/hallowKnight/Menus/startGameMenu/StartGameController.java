@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
+import com.hallowKnight.gameplay.core.GameScreen;
 
 public class StartGameController {
     private StartGameModel model;
@@ -22,10 +23,9 @@ public class StartGameController {
     }
 
     private void setupListeners() {
-        // ۱. تنظیم لیسنر برای دکمه‌های سیو (تغییر رنگ و کلیک)
         for (int i = 0; i < view.getSaveButtons().size(); i++) {
             final TextButton btn = view.getSaveButtons().get(i);
-            final int slotIndex = i; // برای اینکه بفهمیم کدام سیو انتخاب شده
+            final int slotIndex = i;
 
             btn.addListener(new ClickListener() {
                 @Override
@@ -43,7 +43,7 @@ public class StartGameController {
                 public void clicked(InputEvent event, float x, float y) {
                     System.out.println("Loading / Starting Game from Slot: " + model.getSaveSlots().get(slotIndex));
                     // TODO: after writing the game screen
-                    // game.setScreen(new GameScreen(game, slotIndex));
+                    game.setScreen(new GameScreen());
                 }
             });
         }
