@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.hallowKnight.Menus.achievements.AchievementsScreen;
+import com.hallowKnight.Menus.guidMenu.GuideScreen;
 import com.hallowKnight.Menus.settingsMenu.SettingsScreen;
 import com.hallowKnight.Menus.startGameMenu.StartGameScreen;
 
@@ -30,7 +31,7 @@ public class MainMenuController {
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
-                view.getStartButton().getLabel().setColor(Color.YELLOW);
+                view.getStartButton().getLabel().setColor(Color.GRAY);
             }
 
             @Override
@@ -44,6 +45,68 @@ public class MainMenuController {
             }
         });
 
+        //----------------------------------
+
+        view.getGuideButton().addListener(new ClickListener() {
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+                view.getGuideButton().getLabel().setColor(Color.GRAY);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+                view.getGuideButton().getLabel().setColor(Color.WHITE); // برگشت به رنگ عادی
+            }
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GuideScreen(game));
+            }
+        });
+
+        //----------------------------------
+
+        view.getAchievementsButton().addListener(new ClickListener() {
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+                view.getAchievementsButton().getLabel().setColor(Color.GRAY);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+                view.getAchievementsButton().getLabel().setColor(Color.WHITE); // برگشت به رنگ عادی
+            }
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new AchievementsScreen(game));
+            }
+        });
+
+        //----------------------------------
+
+        view.getSettingsButton().addListener(new ClickListener() {
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+                view.getSettingsButton().getLabel().setColor(Color.GRAY);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+                view.getSettingsButton().getLabel().setColor(Color.WHITE); // برگشت به رنگ عادی
+            }
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new SettingsScreen(game));
+            }
+        });
+
+
+
         view.getSettingsButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -55,6 +118,13 @@ public class MainMenuController {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new AchievementsScreen(game));
+            }
+        });
+
+        view.getGuideButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GuideScreen(game));
             }
         });
 
