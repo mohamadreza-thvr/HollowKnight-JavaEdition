@@ -9,13 +9,11 @@ import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
     private SpriteBatch batch;
-    private Texture image;
     MainMenuScreen mainMenuScreen;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
         mainMenuScreen = new MainMenuScreen(this);
         setScreen(mainMenuScreen);
     }
@@ -28,6 +26,5 @@ public class Main extends Game {
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
     }
 }
