@@ -2,6 +2,7 @@ package com.hallowKnight.gameplay.knight;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.hallowKnight.Constance;
 
 public class KnightController {
     private KnightModel model;
@@ -11,24 +12,20 @@ public class KnightController {
     }
 
     public void update(float delta) {
-        // قبل از هر آپدیتی، وضعیت قبلیِ روی زمین بودن را ذخیره می‌کنیم
         model.setWasGrounded(model.isGrounded());
 
         handleInput();
         applyPhysics(delta);
 
-        // --- سیستم تشخیص فرود (Landing) ---
-        // اگر در فریم قبلی در هوا بوده و الان روی زمین است = برخورد با زمین
         if (!model.wasGrounded() && model.isGrounded()) {
             model.setLanding(true);
-            model.setLandingTimer(0.2f); // زمان انیمیشن فرود (مثلا 0.2 ثانیه)
+            model.setLandingTimer(0.2f);
         }
 
-        // اگر در حال فرود است، تایمر را کم کن
         if (model.isLanding()) {
             model.setLandingTimer(model.getLandingTimer() - delta);
             if (model.getLandingTimer() <= 0) {
-                model.setLanding(false); // زمان فرود تمام شد، برگرد به حالت عادی
+                model.setLanding(false);
             }
         }
     }
@@ -38,23 +35,22 @@ public class KnightController {
         model.setLookingUp(false);
         model.setLookingDown(false);
 
-        // حرکت به چپ و راست (لغو کردن فرود در صورت حرکت)
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            model.setVelocityX(-model.getSpeed());
+            model.setVelocityX(-Constance.KNIGHT_SPEED);
             model.setFacingRight(false);
-            model.setLanding(false); // اگر دکمه حرکت را زد، فرود را لغو کن تا بازی روان بماند
+            model.setLanding(false);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            model.setVelocityX(model.getSpeed());
+            model.setVelocityX(Constance.KNIGHT_SPEED);
             model.setFacingRight(true);
             model.setLanding(false);
         }
 
-        // نگاه به بالا و پایین (فقط در صورتی که روی زمین باشد و حرکت نکند)
         if (model.isGrounded() && model.getVelocityX() == 0) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                model.setLookingUp(true);
-                model.setLanding(false); // لغو فرود برای نگاه به بالا
+                if(!model.isLanding()){
+                    model.setLookingUp(true);
+                }
             } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 model.setLookingDown(true);
                 model.setLanding(false);
@@ -63,7 +59,7 @@ public class KnightController {
 
         // پرش
         if (Gdx.input.isKeyJustPressed(Input.Keys.Z) && model.isGrounded()) {
-            model.setVelocityY(model.getJumpForce());
+            model.setVelocityY(Constance.JUMP_FORCE);
             model.setGrounded(false);
             model.setLanding(false);
         }
@@ -77,7 +73,7 @@ public class KnightController {
     private void applyPhysics(float delta) {
         // اعمال جاذبه
         if (!model.isGrounded()) {
-            model.setVelocityY(model.getVelocityY() - (model.getGravity() * delta));
+            model.setVelocityY(model.getVelocityY() - (Constance.GRAVITY * delta));
         }
 
         // اعمال سرعت به موقعیت

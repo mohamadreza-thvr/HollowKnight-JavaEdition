@@ -43,7 +43,7 @@ public class StartGameController {
                 public void clicked(InputEvent event, float x, float y) {
                     System.out.println("Loading / Starting Game from Slot: " + model.getSaveSlots().get(slotIndex));
                     // TODO: after writing the game screen
-                    game.setScreen(new GameScreen());
+                    game.setScreen(new GameScreen(game));
                 }
             });
         }

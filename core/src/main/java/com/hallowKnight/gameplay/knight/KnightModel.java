@@ -1,16 +1,11 @@
 package com.hallowKnight.gameplay.knight;
 
 import com.badlogic.gdx.math.Rectangle;
+import com.hallowKnight.Constance;
 
 public class KnightModel {
     private float x, y;
-    private float width = 250, height = 135;
     private float velocityX = 0, velocityY = 0;
-
-
-    private float speed = 350f;       // سرعت حرکت
-    private float jumpForce = 800f;   // قدرت پرش
-    private float gravity = 2000f;    // جاذبه
 
     private boolean isGrounded = false;
     private boolean isFacingRight = true;
@@ -20,20 +15,20 @@ public class KnightModel {
     private boolean lookingDown = false;
     private boolean isLanding = false;
     private float landingTimer = 0f;
-    private boolean wasGrounded = false; // برای تشخیص زمین خوردن
+    private boolean wasGrounded = false;
 
 
     public KnightModel(float startX, float startY) {
         this.x = startX;
         this.y = startY;
-        this.bounds = new Rectangle(x, y, width, height);
+        this.bounds = new Rectangle(x, y, Constance.KNIGHT_WIDTH, Constance.KNIGHT_HEIGHT);
     }
 
     public void updateBounds() {
         bounds.setPosition(x, y);
     }
 
-    // --- Getter / Setter ---
+
     public float getX() { return x; }
     public void setX(float x) { this.x = x; updateBounds(); }
 
@@ -45,10 +40,6 @@ public class KnightModel {
 
     public float getVelocityY() { return velocityY; }
     public void setVelocityY(float velocityY) { this.velocityY = velocityY; }
-
-    public float getSpeed() { return speed; }
-    public float getJumpForce() { return jumpForce; }
-    public float getGravity() { return gravity; }
 
     public boolean isGrounded() { return isGrounded; }
     public void setGrounded(boolean grounded) { isGrounded = grounded; }
