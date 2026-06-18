@@ -65,6 +65,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
         checkMenuInputs();
 
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.15f, 1);

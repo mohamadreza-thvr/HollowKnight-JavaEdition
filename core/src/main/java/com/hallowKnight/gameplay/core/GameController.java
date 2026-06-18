@@ -8,7 +8,7 @@ public class GameController {
 
     public GameController(GameModel model) {
         this.model = model;
-        this.knightController = new KnightController(model.getKnightModel());
+        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap());
     }
 
     public void update(float delta) {

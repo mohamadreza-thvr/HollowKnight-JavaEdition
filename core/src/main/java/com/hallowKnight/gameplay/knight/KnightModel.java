@@ -17,6 +17,15 @@ public class KnightModel {
     private float landingTimer = 0f;
     private boolean wasGrounded = false;
 
+    private boolean isJumping = false;
+    private float jumpTimer = 0f;
+
+    public boolean isJumping() { return isJumping; }
+    public void setJumping(boolean jumping) { isJumping = jumping; }
+
+    public float getJumpTimer() { return jumpTimer; }
+    public void setJumpTimer(float jumpTimer) { this.jumpTimer = jumpTimer; }
+
 
     public KnightModel(float startX, float startY) {
         this.x = startX;
