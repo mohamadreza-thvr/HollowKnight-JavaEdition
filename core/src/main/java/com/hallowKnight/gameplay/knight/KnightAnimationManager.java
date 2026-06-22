@@ -22,6 +22,8 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> doubleJumpAnimation;
 
     private Animation<TextureRegion> focusAnimation;
+    private Animation<TextureRegion> dashAnimation;
+    private Animation<TextureRegion> deathAnimation;
 
     private List<Texture> loadedTextures;
 
@@ -36,7 +38,7 @@ public class KnightAnimationManager {
         idleAnimation = createSpriteSheetAnimation("animation/idle.png", 9, 1, 0.1f);
         runAnimation = createSpriteSheetAnimation("animation/Run.png", 13, 1, 0.1f);
         jumpAnimation = createSpriteSheetAnimation("animation/Airborne.png", 12, 1, 0.1f);
-        doubleJumpAnimation = createSpriteSheetAnimation("animation/Double Jump.png", 8, 1, 0.2f);
+        doubleJumpAnimation = createSpriteSheetAnimation("animation/Double Jump.png", 8, 1, 0.1f);
 
         String[] fallFiles = {"animation/Fall_000.png", "animation/Fall_001.png", "animation/Fall_002.png",
             "animation/Fall_003.png", "animation/Fall_004.png", "animation/Fall_005.png"};
@@ -50,9 +52,11 @@ public class KnightAnimationManager {
             "animation/Focus_004.png", "animation/Focus_005.png", "animation/Focus_006.png"};
         focusAnimation = createAnimationFromSeparateFiles(focusFiles, 0.1f);
 
-        // اعداد (ستون و ردیف) را بر اساس عکس‌های خودت تنظیم کن!
         wallSlideAnimation = createSpriteSheetAnimation("animation/Wall Slide.png", 4, 1, 0.1f);
         wallJumpAnimation = createSpriteSheetAnimation("animation/Walljump.png", 9, 1, 0.1f);
+
+        dashAnimation = createSpriteSheetAnimation("animation/Dash.png", 12, 1, 0.1f);
+        deathAnimation = createSpriteSheetAnimation("animation/Death.png", 18, 1, 0.08f);
     }
 
     private Animation<TextureRegion> createAnimationFromSeparateFiles(String[] fileNames, float frameDuration) {
@@ -92,14 +96,24 @@ public class KnightAnimationManager {
         float animationTime = stateTime;
         boolean loop = true;
 
-        if (model.isFocusing()) {
+        if (model.isDead()) {
+            currentAnim = deathAnimation;
+            animationTime = model.getDeathTimer();
+        }
+        else if (model.isDashing()) {
+            currentAnim = dashAnimation;
+        }
+        else if (model.isFocusing()) {
             currentAnim = focusAnimation;
-        } else if (model.isWallSliding()) {
+        }
+        else if (model.isWallSliding()) {
             currentAnim = wallSlideAnimation;
-        } else if (model.getWallJumpTimer() > 0) {
+        }
+        else if (model.getWallJumpTimer() > 0) {
             currentAnim = wallJumpAnimation;
             loop = false;
-        } else if (!model.isGrounded()) {
+        }
+        else if (!model.isGrounded()) {
             if (model.isDoubleJumping() && model.getVelocityY() > 0) {
                 currentAnim = doubleJumpAnimation;
             } else if (model.getVelocityY() > 0) {
@@ -107,7 +121,8 @@ public class KnightAnimationManager {
             } else {
                 currentAnim = fallAnimation; // سقوط
             }
-        } else {
+        }
+        else {
             if (model.getVelocityX() != 0) {
                 currentAnim = runAnimation;
             } else if (model.isLookingUp()) {
@@ -124,6 +139,7 @@ public class KnightAnimationManager {
 
         TextureRegion currentFrame = currentAnim.getKeyFrame(animationTime, loop);
 
+        // چرخش کاراکتر (Flip)
         boolean facingRight = model.isFacingRight();
         if (currentFrame.isFlipX() != facingRight) {
             currentFrame.flip(true, false);
