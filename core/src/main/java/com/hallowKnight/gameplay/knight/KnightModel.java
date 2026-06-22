@@ -4,6 +4,20 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.Constance;
 
 public class KnightModel {
+
+    private int maxHealth = 5;
+    private int currentHealth = 5;
+    private boolean isInvulnerable = false;
+    private float invulnerabilityTimer = 0f;
+
+    private float maxSoul = 100f;
+    private float currentSoul = 100f;
+
+    private boolean isFocusing = false;
+    private float focusTimer = 0f;
+
+    private float lastSafeX, lastSafeY;
+
     private float x, y;
     private float velocityX = 0, velocityY = 0;
 
@@ -36,7 +50,6 @@ public class KnightModel {
     public void updateBounds() {
         bounds.setPosition(x, y);
     }
-
 
     public float getX() { return x; }
     public void setX(float x) { this.x = x; updateBounds(); }
@@ -72,4 +85,42 @@ public class KnightModel {
 
     public boolean wasGrounded() { return wasGrounded; }
     public void setWasGrounded(boolean wasGrounded) { this.wasGrounded = wasGrounded; }
+
+    public int getCurrentHealth() { return currentHealth; }
+    public void setCurrentHealth(int health) { this.currentHealth = health; }
+
+    public boolean isInvulnerable() { return isInvulnerable; }
+    public void setInvulnerable(boolean invulnerable) { this.isInvulnerable = invulnerable; }
+
+    public float getInvulnerabilityTimer() { return invulnerabilityTimer; }
+    public void setInvulnerabilityTimer(float timer) { this.invulnerabilityTimer = timer; }
+
+    public float getLastSafeX() { return lastSafeX; }
+    public float getLastSafeY() { return lastSafeY; }
+    public void setSafePosition(float x, float y) { this.lastSafeX = x; this.lastSafeY = y; }
+
+    public float getCurrentSoul() { return currentSoul; }
+    public void setCurrentSoul(float soul) { this.currentSoul = Math.max(0, Math.min(soul, maxSoul)); }
+    public float getMaxSoul() { return maxSoul; }
+
+    public boolean isFocusing() { return isFocusing; }
+    public void setFocusing(boolean focusing) { isFocusing = focusing; }
+
+    public float getFocusTimer() { return focusTimer; }
+    public void setFocusTimer(float focusTimer) { this.focusTimer = focusTimer; }
+
+    public void heal(int amount) {
+        if (currentHealth < 5) {
+            currentHealth += amount;
+        }
+    }
+
+    public void takeDamage(int amount) {
+        if (!isInvulnerable) {
+            currentHealth -= amount;
+            if (currentHealth < 0) currentHealth = 0;
+            isInvulnerable = true;
+            invulnerabilityTimer = 1.5f;
+        }
+    }
 }

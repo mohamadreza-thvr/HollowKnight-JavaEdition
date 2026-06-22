@@ -18,6 +18,9 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> lookDownAnimation;
     private Animation<TextureRegion> landingAnimation;
 
+    // انیمیشن جدید تمرکز
+    private Animation<TextureRegion> focusAnimation;
+
     private List<Texture> loadedTextures;
 
     private float stateTime = 0f;
@@ -39,23 +42,30 @@ public class KnightAnimationManager {
         lookUpAnimation = createSpriteSheetAnimation("animation/LookUp.png", 6, 1, 0.1f);
         lookDownAnimation = createSpriteSheetAnimation("animation/LookDown.png", 6, 1, 0.1f);
         landingAnimation = createSpriteSheetAnimation("animation/Landing.png", 4, 1, 0.1f);
+
+        String[] focusFiles = {
+            "animation/Focus_001.png",
+            "animation/Focus_002.png",
+            "animation/Focus_003.png",
+            "animation/Focus_004.png",
+            "animation/Focus_005.png",
+            "animation/Focus_006.png"
+        };
+        focusAnimation = createAnimationFromSeparateFiles(focusFiles, 0.1f);
     }
 
-    // ساخت انیمیشن از فریم های جدا
     private Animation<TextureRegion> createAnimationFromSeparateFiles(String[] fileNames, float frameDuration) {
         TextureRegion[] frames = new TextureRegion[fileNames.length];
 
         for (int i = 0; i < fileNames.length; i++) {
             Texture tex = new Texture(Gdx.files.internal(fileNames[i]));
             loadedTextures.add(tex);
-
             frames[i] = new TextureRegion(tex);
         }
 
         return new Animation<TextureRegion>(frameDuration, frames);
     }
 
-    // ساخت انیمیشن از اسپرایت شیت
     private Animation<TextureRegion> createSpriteSheetAnimation(String fileName, int columns, int rows, float frameDuration) {
         Texture sheet = new Texture(Gdx.files.internal(fileName));
         loadedTextures.add(sheet);
@@ -78,16 +88,18 @@ public class KnightAnimationManager {
     public TextureRegion getCurrentFrame(float delta, KnightModel model) {
         stateTime += delta;
         Animation<TextureRegion> currentAnim;
+        boolean loop = true;
 
-        // تشخیص وضعیت
-        if (!model.isGrounded()) {
+        if (model.isFocusing()) {
+            currentAnim = focusAnimation;
+        }
+        else if (!model.isGrounded()) {
             if (model.getVelocityY() > 0) {
                 currentAnim = jumpAnimation;
             } else {
                 currentAnim = fallAnimation;
             }
         } else {
-            // اولویت‌بندی انیمیشن‌های روی زمین:
             if (model.getVelocityX() != 0) {
                 currentAnim = runAnimation;
             } else if (model.isLookingUp()) {
@@ -96,18 +108,16 @@ public class KnightAnimationManager {
                 currentAnim = lookDownAnimation;
             } else if (model.isLanding()) {
                 currentAnim = landingAnimation;
+                loop = false;
             } else {
                 currentAnim = idleAnimation;
             }
         }
 
-        TextureRegion currentFrame = currentAnim.getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = currentAnim.getKeyFrame(stateTime, loop);
 
-        // چرخش کاراکتر
         boolean facingRight = model.isFacingRight();
-        boolean expectedFlipX = facingRight;
-
-        if (currentFrame.isFlipX() != expectedFlipX) {
+        if (currentFrame.isFlipX() != facingRight) {
             currentFrame.flip(true, false);
         }
         return currentFrame;

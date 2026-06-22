@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(Game game) {
         model = new GameModel();
-        controller = new GameController(model);
+        controller = new GameController(model, game);
         view = new GameView(model);
 
         this.game = game;
@@ -73,6 +73,11 @@ public class GameScreen implements Screen {
 
         if (currentState == GameState.RUNNING) {
             controller.update(delta);
+
+            if (game.getScreen() != this) {
+                return;
+            }
+
             view.render(delta);
 
         } else if (currentState == GameState.PAUSED) {
@@ -119,12 +124,17 @@ public class GameScreen implements Screen {
 
     @Override public void pause() {}
     @Override public void resume() {}
-    @Override public void hide() {}
+
+    @Override
+    public void hide() {
+        dispose();
+    }
 
     @Override
     public void dispose() {
-        view.dispose();
-        pauseView.dispose();
-        inventoryView.dispose();
+        if (view != null) view.dispose();
+        if (pauseView != null) pauseView.dispose();
+        if (inventoryView != null) inventoryView.dispose();
     }
+
 }

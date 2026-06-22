@@ -1,5 +1,6 @@
 package com.hallowKnight.gameplay.core;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hallowKnight.gameplay.hud.HudView;
 import com.hallowKnight.gameplay.knight.KnightView;
 import com.hallowKnight.gameplay.map.MapView;
 
@@ -22,6 +24,7 @@ public class GameView {
     private KnightView knightView;
 
     private com.badlogic.gdx.graphics.Texture background;
+    private HudView hudView;
 
 
     public GameView(GameModel model) {
@@ -29,7 +32,9 @@ public class GameView {
         this.camera = new OrthographicCamera();
         this.viewport = new StretchViewport(1280, 720, camera);
         this.mapView = new MapView(model.getCurrentMap());
-        this.background = new com.badlogic.gdx.graphics.Texture("bg.png");
+        this.background = new com.badlogic.gdx.graphics.Texture("bg2.png");
+
+        this.hudView = new HudView(model.getKnightModel());
 
         this.batch = new SpriteBatch();
         this.shapeRenderer = new ShapeRenderer();
@@ -73,6 +78,12 @@ public class GameView {
 
         batch.begin();
         knightView.render(batch, delta);
+        batch.end();
+
+        batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        batch.begin();
+        hudView.render(batch, delta);
         batch.end();
     }
 

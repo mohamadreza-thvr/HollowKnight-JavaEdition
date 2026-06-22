@@ -14,11 +14,16 @@ public class KnightView {
     }
 
     public void render(SpriteBatch batch, float delta) {
+        if (model.isInvulnerable()) {
+            if ((int)(model.getInvulnerabilityTimer() * 15) % 2 == 0) {
+                return;
+            }
+        }
+
         TextureRegion currentFrame = animationManager.getCurrentFrame(delta, model);
 
         float visualWidth = 250;
         float visualHeight = 135;
-
         float offsetX = (visualWidth - model.getBounds().width) / 2f;
         float offsetY = 0;
 
