@@ -7,6 +7,6 @@ public class Constance {
     public static float KNIGHT_SPEED= 350f;
     public static float JUMP_FORCE = 800f;
 
-    public static float GRAVITY = 300;
+    public static float GRAVITY = 1500;
 
 }

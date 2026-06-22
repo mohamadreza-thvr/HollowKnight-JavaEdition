@@ -33,6 +33,12 @@ public class KnightModel {
 
     private boolean isJumping = false;
     private float jumpTimer = 0f;
+    private boolean canDoubleJump = true;
+    private boolean isDoubleJumping = false;
+
+    private boolean isWallSliding = false;
+    private int wallDirection = 0; // اگر دیوار سمت چپ باشد -1، اگر راست باشد 1
+    private float wallJumpTimer = 0f;
 
     public boolean isJumping() { return isJumping; }
     public void setJumping(boolean jumping) { isJumping = jumping; }
@@ -108,6 +114,21 @@ public class KnightModel {
 
     public float getFocusTimer() { return focusTimer; }
     public void setFocusTimer(float focusTimer) { this.focusTimer = focusTimer; }
+
+    public boolean isWallSliding() { return isWallSliding; }
+    public void setWallSliding(boolean wallSliding) { isWallSliding = wallSliding; }
+
+    public int getWallDirection() { return wallDirection; }
+    public void setWallDirection(int wallDirection) { this.wallDirection = wallDirection; }
+
+    public float getWallJumpTimer() { return wallJumpTimer; }
+    public void setWallJumpTimer(float wallJumpTimer) { this.wallJumpTimer = wallJumpTimer; }
+
+    public boolean isCanDoubleJump() { return canDoubleJump; }
+    public void setCanDoubleJump(boolean canDoubleJump) { this.canDoubleJump = canDoubleJump; }
+
+    public boolean isDoubleJumping() { return isDoubleJumping; }
+    public void setDoubleJumping(boolean doubleJumping) { this.isDoubleJumping = doubleJumping; }
 
     public void heal(int amount) {
         if (currentHealth < 5) {

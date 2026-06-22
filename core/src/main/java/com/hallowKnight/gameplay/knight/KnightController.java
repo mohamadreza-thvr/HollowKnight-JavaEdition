@@ -25,6 +25,11 @@ public class KnightController {
         handleInput(delta);
         applyPhysics(delta, mapModel);
 
+        if (model.isGrounded() || model.isWallSliding()) {
+            model.setCanDoubleJump(true);
+            model.setDoubleJumping(false);
+        }
+
         if (model.isInvulnerable()) {
             model.setInvulnerabilityTimer(model.getInvulnerabilityTimer() - delta);
             if (model.getInvulnerabilityTimer() <= 0) {
@@ -65,22 +70,26 @@ public class KnightController {
         model.setLookingUp(false);
         model.setLookingDown(false);
 
-        // حرکت به چپ و راست
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            model.setVelocityX(-Constance.KNIGHT_SPEED);
-            model.setFacingRight(false);
-            model.setLanding(false);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            model.setVelocityX(Constance.KNIGHT_SPEED);
-            model.setFacingRight(true);
-            model.setLanding(false);
+        if (model.getWallJumpTimer() > 0) {
+            model.setWallJumpTimer(model.getWallJumpTimer() - delta);
         }
 
-        // نگاه کردن به بالا و پایین
+        if (model.getWallJumpTimer() <= 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                model.setVelocityX(-Constance.KNIGHT_SPEED);
+                model.setFacingRight(false);
+                model.setLanding(false);
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                model.setVelocityX(Constance.KNIGHT_SPEED);
+                model.setFacingRight(true);
+                model.setLanding(false);
+            }
+        }
+
         if (model.isGrounded() && model.getVelocityX() == 0) {
             if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                if(!model.isLanding()){
+                if (!model.isLanding()) {
                     model.setLookingUp(true);
                 }
             } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
@@ -89,41 +98,41 @@ public class KnightController {
             }
         }
 
-        // پرش
-        if (Gdx.input.isKeyJustPressed(Input.Keys.Z) && model.isGrounded()) {
-            model.setVelocityY(Constance.JUMP_FORCE);
-            model.setGrounded(false);
-            model.setLanding(false);
-            model.setJumping(true);
-            model.setJumpTimer(0f);
-        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
 
-        if (Gdx.input.isKeyPressed(Input.Keys.Z) && model.isJumping()) {
-            model.setJumpTimer(model.getJumpTimer() + delta);
-
-            if (model.getJumpTimer() < 0.2f) {
+            if (model.isGrounded()) {
                 model.setVelocityY(Constance.JUMP_FORCE);
-            } else {
-                model.setJumping(false);
+                model.setGrounded(false);
+                model.setLanding(false);
+            }
+            else if (model.isWallSliding()) {
+                model.setVelocityY(Constance.JUMP_FORCE * 0.9f);
+                model.setVelocityX(-model.getWallDirection() * Constance.KNIGHT_SPEED * 1.5f);
+                model.setWallSliding(false);
+                model.setWallJumpTimer(0.25f);
+                model.setFacingRight(model.getWallDirection() == 1);
+            }
+            else if (model.isCanDoubleJump()) {
+                model.setVelocityY(Constance.JUMP_FORCE);
+                model.setCanDoubleJump(false);
+                model.setDoubleJumping(true);
+                model.setWallSliding(false);
             }
         }
 
         if (!Gdx.input.isKeyPressed(Input.Keys.Z)) {
-            model.setJumping(false);
-
-            if (model.getVelocityY() > 0) {
-                model.setVelocityY(model.getVelocityY() * 0.5f);
+            if (model.getVelocityY() > 0 && model.getWallJumpTimer() <= 0) {
+                model.setVelocityY(model.getVelocityY() - (Constance.GRAVITY * 2.5f * delta));
             }
         }
 
-        // سیستم تمرکز (Focus)
+
         if (Gdx.input.isKeyPressed(Input.Keys.C) && model.isGrounded()) {
-            model.setVelocityX(0); // هنگام تمرکز نباید حرکت کند
+            model.setVelocityX(0);
             model.setFocusing(true);
 
             if (model.getCurrentHealth() < 5 && model.getCurrentSoul() >= 20) {
                 model.setFocusTimer(model.getFocusTimer() + delta);
-
                 if (model.getFocusTimer() >= 1.0f) {
                     model.setCurrentSoul(model.getCurrentSoul() - 20);
                     model.heal(1);
@@ -140,6 +149,8 @@ public class KnightController {
     }
 
     private void applyPhysics(float delta, MapModel mapModel) {
+        boolean touchingWall = false;
+
         model.setX(model.getX() + (model.getVelocityX() * delta));
         model.updateBounds();
 
@@ -148,22 +159,43 @@ public class KnightController {
 
                 if (model.getVelocityX() > 0) {
                     model.setX(solid.x - model.getBounds().width);
+                    touchingWall = true;
+                    model.setWallDirection(1);
                 }
                 else if (model.getVelocityX() < 0) {
                     model.setX(solid.x + solid.width);
+                    touchingWall = true;
+                    model.setWallDirection(-1);
                 }
                 model.setVelocityX(0);
                 model.updateBounds();
             }
         }
 
-        model.setVelocityY(model.getVelocityY() - (Constance.GRAVITY * delta));
+        if (touchingWall && !model.isGrounded() && model.getVelocityY() < 0) {
+            if ((model.getWallDirection() == 1 && Gdx.input.isKeyPressed(Input.Keys.RIGHT)) ||
+                (model.getWallDirection() == -1 && Gdx.input.isKeyPressed(Input.Keys.LEFT))) {
+                model.setWallSliding(true);
+            } else {
+                model.setWallSliding(false);
+            }
+        } else {
+            model.setWallSliding(false);
+        }
+
+        if (model.isWallSliding()) {
+            float maxSlideSpeed = -Constance.KNIGHT_SPEED * 0.4f;
+            model.setVelocityY(Math.max(model.getVelocityY() - (Constance.GRAVITY * delta), maxSlideSpeed));
+        } else {
+            model.setVelocityY(model.getVelocityY() - (Constance.GRAVITY * delta));
+        }
+
         model.setY(model.getY() + (model.getVelocityY() * delta));
         model.updateBounds();
 
         model.setGrounded(false);
 
-        for (Rectangle solid : mapModel.getSolidBounds()) {
+        for (com.badlogic.gdx.math.Rectangle solid : mapModel.getSolidBounds()) {
             if (model.getBounds().overlaps(solid)) {
 
                 if (model.getVelocityY() < 0) {

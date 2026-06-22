@@ -17,8 +17,10 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> lookUpAnimation;
     private Animation<TextureRegion> lookDownAnimation;
     private Animation<TextureRegion> landingAnimation;
+    private Animation<TextureRegion> wallSlideAnimation;
+    private Animation<TextureRegion> wallJumpAnimation;
+    private Animation<TextureRegion> doubleJumpAnimation;
 
-    // انیمیشن جدید تمرکز
     private Animation<TextureRegion> focusAnimation;
 
     private List<Texture> loadedTextures;
@@ -34,6 +36,7 @@ public class KnightAnimationManager {
         idleAnimation = createSpriteSheetAnimation("animation/idle.png", 9, 1, 0.1f);
         runAnimation = createSpriteSheetAnimation("animation/Run.png", 13, 1, 0.1f);
         jumpAnimation = createSpriteSheetAnimation("animation/Airborne.png", 12, 1, 0.1f);
+        doubleJumpAnimation = createSpriteSheetAnimation("animation/Double Jump.png", 8, 1, 0.2f);
 
         String[] fallFiles = {"animation/Fall_000.png", "animation/Fall_001.png", "animation/Fall_002.png",
             "animation/Fall_003.png", "animation/Fall_004.png", "animation/Fall_005.png"};
@@ -43,15 +46,13 @@ public class KnightAnimationManager {
         lookDownAnimation = createSpriteSheetAnimation("animation/LookDown.png", 6, 1, 0.1f);
         landingAnimation = createSpriteSheetAnimation("animation/Landing.png", 4, 1, 0.1f);
 
-        String[] focusFiles = {
-            "animation/Focus_001.png",
-            "animation/Focus_002.png",
-            "animation/Focus_003.png",
-            "animation/Focus_004.png",
-            "animation/Focus_005.png",
-            "animation/Focus_006.png"
-        };
+        String[] focusFiles = {"animation/Focus_001.png", "animation/Focus_002.png", "animation/Focus_003.png",
+            "animation/Focus_004.png", "animation/Focus_005.png", "animation/Focus_006.png"};
         focusAnimation = createAnimationFromSeparateFiles(focusFiles, 0.1f);
+
+        // اعداد (ستون و ردیف) را بر اساس عکس‌های خودت تنظیم کن!
+        wallSlideAnimation = createSpriteSheetAnimation("animation/Wall Slide.png", 4, 1, 0.1f);
+        wallJumpAnimation = createSpriteSheetAnimation("animation/Walljump.png", 9, 1, 0.1f);
     }
 
     private Animation<TextureRegion> createAnimationFromSeparateFiles(String[] fileNames, float frameDuration) {
@@ -87,17 +88,24 @@ public class KnightAnimationManager {
 
     public TextureRegion getCurrentFrame(float delta, KnightModel model) {
         stateTime += delta;
-        Animation<TextureRegion> currentAnim;
+        Animation<TextureRegion> currentAnim = idleAnimation;
+        float animationTime = stateTime;
         boolean loop = true;
 
         if (model.isFocusing()) {
             currentAnim = focusAnimation;
-        }
-        else if (!model.isGrounded()) {
-            if (model.getVelocityY() > 0) {
-                currentAnim = jumpAnimation;
+        } else if (model.isWallSliding()) {
+            currentAnim = wallSlideAnimation;
+        } else if (model.getWallJumpTimer() > 0) {
+            currentAnim = wallJumpAnimation;
+            loop = false;
+        } else if (!model.isGrounded()) {
+            if (model.isDoubleJumping() && model.getVelocityY() > 0) {
+                currentAnim = doubleJumpAnimation;
+            } else if (model.getVelocityY() > 0) {
+                currentAnim = jumpAnimation; // پرش اول
             } else {
-                currentAnim = fallAnimation;
+                currentAnim = fallAnimation; // سقوط
             }
         } else {
             if (model.getVelocityX() != 0) {
@@ -114,7 +122,7 @@ public class KnightAnimationManager {
             }
         }
 
-        TextureRegion currentFrame = currentAnim.getKeyFrame(stateTime, loop);
+        TextureRegion currentFrame = currentAnim.getKeyFrame(animationTime, loop);
 
         boolean facingRight = model.isFacingRight();
         if (currentFrame.isFlipX() != facingRight) {
