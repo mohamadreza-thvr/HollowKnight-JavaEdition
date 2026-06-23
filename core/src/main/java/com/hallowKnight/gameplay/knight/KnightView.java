@@ -32,6 +32,51 @@ public class KnightView {
             model.getY() - offsetY,
             visualWidth,
             visualHeight);
+
+        if (model.isAttacking()) {
+            TextureRegion effectFrame = null;
+
+            if (model.getAttackDirection() == 1) {
+                effectFrame = animationManager.getUpSlashEffectAnimation().getKeyFrame(model.getAttackTimer(), false);
+            } else if (model.getAttackDirection() == -1) {
+                effectFrame = animationManager.getDownSlashEffectAnimation().getKeyFrame(model.getAttackTimer(), false);
+            } else {
+                effectFrame = model.isAltSlash()
+                    ? animationManager.getSlashEffectAltAnimation().getKeyFrame(model.getAttackTimer(), false)
+                    : animationManager.getSlashEffectAnimation().getKeyFrame(model.getAttackTimer(), false);
+            }
+
+            if (effectFrame != null) {
+                if (effectFrame.isFlipX() != model.isFacingRight()) {
+                    effectFrame.flip(true, false);
+                }
+
+                batch.draw(effectFrame,
+                    model.getX() - offsetX,
+                    model.getY() - offsetY,
+                    visualWidth,
+                    visualHeight);
+            }
+        }
+
+        if (model.isDashing()) {
+            float elapsedTime = Math.max(0f, 0.25f - model.getDashTimer());
+
+            TextureRegion dashEffectFrame = animationManager.getDashEffectAnimation().getKeyFrame(elapsedTime, false);
+
+            if (dashEffectFrame.isFlipX() == model.isFacingRight()) {
+                dashEffectFrame.flip(true, false);
+            }
+
+            int dashSide;
+            dashSide = model.isFacingRight() ? 1 : -1;
+
+            batch.draw(dashEffectFrame,
+                model.getX() - offsetX - dashSide * 150,
+                model.getY() - offsetY - 20,
+                visualWidth,
+                visualHeight);
+        }
     }
 
     public void dispose() {

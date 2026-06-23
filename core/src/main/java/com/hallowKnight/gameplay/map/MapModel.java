@@ -55,6 +55,7 @@ public class MapModel {
                     if (name != null) {
                         if (name.equalsIgnoreCase("deadly")) {
                             deadlyBounds.add(rect);
+                            solidBounds.add(rect);
                         } else if (name.equalsIgnoreCase("Spawn Knight")) {
                             knightSpawn.set(rect.x, rect.y);
                         } else if (name.equalsIgnoreCase("Spawn Enemy")) {

@@ -47,6 +47,11 @@ public class KnightModel {
     private boolean isDead = false;
     private float deathTimer = 0f;
 
+    private boolean isAttacking = false;
+    private float attackTimer = 0f;
+    private int attackDirection = 0; // 0 = جلو، 1 = بالا، -1 = پایین
+    private boolean isAltSlash = false;
+
     public KnightModel(float startX, float startY) {
         this.x = startX;
         this.y = startY;
@@ -117,6 +122,18 @@ public class KnightModel {
     public void setDead(boolean dead) { isDead = dead; }
     public float getDeathTimer() { return deathTimer; }
     public void setDeathTimer(float deathTimer) { this.deathTimer = deathTimer; }
+
+    public boolean isAttacking() { return isAttacking; }
+    public void setAttacking(boolean attacking) { isAttacking = attacking; }
+
+    public float getAttackTimer() { return attackTimer; }
+    public void setAttackTimer(float attackTimer) { this.attackTimer = attackTimer; }
+
+    public int getAttackDirection() { return attackDirection; }
+    public void setAttackDirection(int attackDirection) { this.attackDirection = attackDirection; }
+
+    public boolean isAltSlash() { return isAltSlash; }
+    public void setAltSlash(boolean altSlash) { this.isAltSlash = altSlash; }
 
     public void heal(int amount) {
         if (currentHealth < 5 && !isDead) { currentHealth += amount; }

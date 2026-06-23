@@ -25,6 +25,17 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> dashAnimation;
     private Animation<TextureRegion> deathAnimation;
 
+    private Animation<TextureRegion> slashAnimation;
+    private Animation<TextureRegion> slashAltAnimation;
+    private Animation<TextureRegion> upSlashAnimation;
+    private Animation<TextureRegion> downSlashAnimation;
+
+    private Animation<TextureRegion> dashEffectAnimation;
+    private Animation<TextureRegion> slashEffectAnimation;
+    private Animation<TextureRegion> slashEffectAltAnimation;
+    private Animation<TextureRegion> upSlashEffectAnimation;
+    private Animation<TextureRegion> downSlashEffectAnimation;
+
     private List<Texture> loadedTextures;
 
     private float stateTime = 0f;
@@ -57,30 +68,36 @@ public class KnightAnimationManager {
 
         dashAnimation = createSpriteSheetAnimation("animation/Dash.png", 12, 1, 0.1f);
         deathAnimation = createSpriteSheetAnimation("animation/Death.png", 18, 1, 0.08f);
+
+        slashAnimation = createSpriteSheetAnimation("animation/Slash.png", 5, 1, 0.08f);
+        slashAltAnimation = createSpriteSheetAnimation("animation/SlashAlt.png", 5, 1, 0.08f);
+        upSlashAnimation = createSpriteSheetAnimation("animation/UpSlash.png", 5, 1, 0.08f);
+        downSlashAnimation = createSpriteSheetAnimation("animation/DownSlash.png", 5, 1, 0.08f);
+
+        dashEffectAnimation = createSpriteSheetAnimation("animation/Effects/Dash Effect.png", 8, 1, 0.05f);
+        slashEffectAnimation = createSpriteSheetAnimation("animation/Effects/SlashEffect.png", 6, 1, 0.08f);
+        slashEffectAltAnimation = createSpriteSheetAnimation("animation/Effects/SlashEffectAlt.png", 6, 1, 0.08f);
+        upSlashEffectAnimation = createSpriteSheetAnimation("animation/Effects/UpSlashEffect.png", 6, 1, 0.08f);
+        downSlashEffectAnimation = createSpriteSheetAnimation("animation/Effects/DownSlashEffect.png", 6, 1, 0.08f);
     }
 
     private Animation<TextureRegion> createAnimationFromSeparateFiles(String[] fileNames, float frameDuration) {
         TextureRegion[] frames = new TextureRegion[fileNames.length];
-
         for (int i = 0; i < fileNames.length; i++) {
             Texture tex = new Texture(Gdx.files.internal(fileNames[i]));
             loadedTextures.add(tex);
             frames[i] = new TextureRegion(tex);
         }
-
         return new Animation<TextureRegion>(frameDuration, frames);
     }
 
     private Animation<TextureRegion> createSpriteSheetAnimation(String fileName, int columns, int rows, float frameDuration) {
         Texture sheet = new Texture(Gdx.files.internal(fileName));
         loadedTextures.add(sheet);
-
         int frameWidth = sheet.getWidth() / columns;
         int frameHeight = sheet.getHeight() / rows;
-
         TextureRegion[][] tmp = TextureRegion.split(sheet, frameWidth, frameHeight);
         TextureRegion[] frames = new TextureRegion[columns * rows];
-
         int index = 0;
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -99,9 +116,22 @@ public class KnightAnimationManager {
         if (model.isDead()) {
             currentAnim = deathAnimation;
             animationTime = model.getDeathTimer();
+            loop = false;
         }
         else if (model.isDashing()) {
             currentAnim = dashAnimation;
+  //          loop = false;
+        }
+        else if (model.isAttacking()) {
+            if (model.getAttackDirection() == 1) {
+                currentAnim = upSlashAnimation;
+            } else if (model.getAttackDirection() == -1) {
+                currentAnim = downSlashAnimation;
+            } else {
+                currentAnim = model.isAltSlash() ? slashAltAnimation : slashAnimation;
+            }
+            animationTime = model.getAttackTimer();
+//            loop = false;
         }
         else if (model.isFocusing()) {
             currentAnim = focusAnimation;
@@ -111,15 +141,16 @@ public class KnightAnimationManager {
         }
         else if (model.getWallJumpTimer() > 0) {
             currentAnim = wallJumpAnimation;
-            loop = false;
+ //           loop = false;
         }
         else if (!model.isGrounded()) {
             if (model.isDoubleJumping() && model.getVelocityY() > 0) {
                 currentAnim = doubleJumpAnimation;
+ //               loop = false;
             } else if (model.getVelocityY() > 0) {
-                currentAnim = jumpAnimation; // پرش اول
+                currentAnim = jumpAnimation;
             } else {
-                currentAnim = fallAnimation; // سقوط
+                currentAnim = fallAnimation;
             }
         }
         else {
@@ -139,13 +170,18 @@ public class KnightAnimationManager {
 
         TextureRegion currentFrame = currentAnim.getKeyFrame(animationTime, loop);
 
-        // چرخش کاراکتر (Flip)
         boolean facingRight = model.isFacingRight();
         if (currentFrame.isFlipX() != facingRight) {
             currentFrame.flip(true, false);
         }
         return currentFrame;
     }
+
+    public Animation<TextureRegion> getDashEffectAnimation() { return dashEffectAnimation; }
+    public Animation<TextureRegion> getSlashEffectAnimation() { return slashEffectAnimation; }
+    public Animation<TextureRegion> getSlashEffectAltAnimation() { return slashEffectAltAnimation; }
+    public Animation<TextureRegion> getUpSlashEffectAnimation() { return upSlashEffectAnimation; }
+    public Animation<TextureRegion> getDownSlashEffectAnimation() { return downSlashEffectAnimation; }
 
     public void dispose() {
         for (Texture texture : loadedTextures) {

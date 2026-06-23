@@ -33,6 +33,12 @@ public class KnightController {
             }
             return;
         }
+        if (model.isAttacking()) {
+            model.setAttackTimer(model.getAttackTimer() + delta);
+            if (model.getAttackTimer() >= 0.4f) {
+                model.setAttacking(false);
+            }
+        }
 
         model.setWasGrounded(model.isGrounded());
 
@@ -64,8 +70,6 @@ public class KnightController {
                 model.setSafePosition(model.getX(), model.getY());
             }
         }
-
-        checkHazards(mapModel);
 
         if (!model.wasGrounded() && model.isGrounded()) {
             model.setLanding(true);
@@ -116,6 +120,26 @@ public class KnightController {
             model.setWallJumpTimer(model.getWallJumpTimer() - delta);
         }
 
+        if (!model.isDashing() && !model.isFocusing()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.X) && !model.isAttacking()) {
+                model.setAttacking(true);
+                model.setAttackTimer(0f);
+
+                // تشخیص جهت حمله
+                if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                    model.setAttackDirection(1); // ضربه رو به بالا
+                }
+
+                else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !model.isGrounded()) {
+                    model.setAttackDirection(-1);
+                }
+                else {
+                    model.setAttackDirection(0);
+                    model.setAltSlash(!model.isAltSlash());
+                }
+            }
+        }
+
         if (model.getWallJumpTimer() <= 0) {
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 model.setVelocityX(-Constance.KNIGHT_SPEED);
@@ -164,7 +188,7 @@ public class KnightController {
         }
 
         // تمرکز
-        if (Gdx.input.isKeyPressed(Input.Keys.X) && model.isGrounded()) {
+        if (Gdx.input.isKeyPressed(Input.Keys.A) && model.isGrounded()) {
             model.setVelocityX(0);
             model.setFocusing(true);
             if (model.getCurrentHealth() < 5 && model.getCurrentSoul() >= 20) {
@@ -189,22 +213,36 @@ public class KnightController {
         model.setX(model.getX() + (model.getVelocityX() * delta));
         model.updateBounds();
 
-        for (com.badlogic.gdx.math.Rectangle solid : mapModel.getSolidBounds()) {
+        if (checkHazards(mapModel)) return;
+
+        for (Rectangle solid : mapModel.getSolidBounds()) {
             if (model.getBounds().overlaps(solid)) {
+
+                Rectangle lowerHalf = new Rectangle(
+                    model.getBounds().x,
+                    model.getBounds().y,
+                    model.getBounds().width,
+                    model.getBounds().height * 0.5f
+                );
+
+                boolean touchesLowerHalf = lowerHalf.overlaps(solid);
+
                 if (model.getVelocityX() > 0) {
                     model.setX(solid.x - model.getBounds().width);
-                    touchingWall = true;
-                    model.setWallDirection(1);
+                    if (touchesLowerHalf) {
+                        touchingWall = true;
+                        model.setWallDirection(1);
+                    }
                 }
                 else if (model.getVelocityX() < 0) {
                     model.setX(solid.x + solid.width);
-                    touchingWall = true;
-                    model.setWallDirection(-1);
+                    if (touchesLowerHalf) {
+                        touchingWall = true;
+                        model.setWallDirection(-1);
+                    }
                 }
-
                 model.setVelocityX(0);
                 if (model.isDashing()) { model.setDashing(false); }
-
                 model.updateBounds();
             }
         }
@@ -220,6 +258,7 @@ public class KnightController {
             model.setWallSliding(false);
         }
 
+        // اعمال جاذبه
         if (!model.isDashing()) {
             if (model.isWallSliding()) {
                 float maxSlideSpeed = -Constance.KNIGHT_SPEED * 0.4f;
@@ -231,6 +270,8 @@ public class KnightController {
 
         model.setY(model.getY() + (model.getVelocityY() * delta));
         model.updateBounds();
+
+        if (checkHazards(mapModel)) return;
 
         model.setGrounded(false);
 
@@ -250,9 +291,10 @@ public class KnightController {
         }
     }
 
-    private void checkHazards(com.hallowKnight.gameplay.map.MapModel mapModel) {
+    private boolean checkHazards(com.hallowKnight.gameplay.map.MapModel mapModel) {
         for (Rectangle spike : mapModel.getDeadlyBounds()) {
             if (model.getBounds().overlaps(spike)) {
+
                 model.takeDamage(1);
 
                 if (!model.isDead()) {
@@ -260,10 +302,11 @@ public class KnightController {
                     model.setY(model.getLastSafeY() + 10);
                     model.setVelocityX(0);
                     model.setVelocityY(0);
+                    model.updateBounds();
                 }
-                model.updateBounds();
-                break;
+                return true;
             }
         }
+        return false;
     }
 }
