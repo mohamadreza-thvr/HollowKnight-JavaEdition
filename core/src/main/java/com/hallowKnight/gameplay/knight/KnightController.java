@@ -7,6 +7,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.Constance;
 import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
+import com.hallowKnight.gameplay.enemy.EnemyModel; // اضافه شدن ایمپورت دشمنان
+
+import java.util.List; // اضافه شدن ایمپورت لیست
 
 public class KnightController {
     private Game game;
@@ -19,7 +22,8 @@ public class KnightController {
         this.game = game;
     }
 
-    public void update(float delta) {
+    // ⚠️ لیست دشمنان به ورودی این متد اضافه شد
+    public void update(float delta, List<EnemyModel> enemies) {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -42,8 +46,18 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        handleInput(delta);
+        // پاس دادن لیست دشمنان به سیستم دکمه‌ها برای بررسی برخورد شمشیر
+        handleInput(delta, enemies);
         applyPhysics(delta, mapModel);
+
+        // --- چک کردن برخورد بدن شوالیه با دشمنان (دمیج خوردن شوالیه) ---
+        if (!model.isDead() && !model.isDashing()) {
+            for (EnemyModel enemy : enemies) {
+                if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
+                    model.takeDamage(1);
+                }
+            }
+        }
 
         if (model.isGrounded() || model.isWallSliding()) {
             model.setCanDoubleJump(true);
@@ -84,7 +98,7 @@ public class KnightController {
         }
     }
 
-    private void handleInput(float delta) {
+    private void handleInput(float delta, List<EnemyModel> enemies) {
         if (model.isDashing()) {
             model.setDashTimer(model.getDashTimer() - delta);
             model.setVelocityY(0);
@@ -120,22 +134,41 @@ public class KnightController {
             model.setWallJumpTimer(model.getWallJumpTimer() - delta);
         }
 
+        // --- سیستم حمله با شمشیر (Attack) ---
         if (!model.isDashing() && !model.isFocusing()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.X) && !model.isAttacking()) {
                 model.setAttacking(true);
                 model.setAttackTimer(0f);
 
-                // تشخیص جهت حمله
-                if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                    model.setAttackDirection(1); // ضربه رو به بالا
-                }
+                Rectangle attackBox = new Rectangle();
+                float reach = 80f;
 
+                if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                    model.setAttackDirection(1);
+                    attackBox.set(model.getX(), model.getY() + model.getBounds().height, model.getBounds().width, reach);
+                }
                 else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !model.isGrounded()) {
                     model.setAttackDirection(-1);
+                    attackBox.set(model.getX(), model.getY() - reach, model.getBounds().width, reach);
                 }
                 else {
                     model.setAttackDirection(0);
                     model.setAltSlash(!model.isAltSlash());
+                    float ax = model.isFacingRight() ? model.getX() + model.getBounds().width : model.getX() - reach;
+                    attackBox.set(ax, model.getY(), reach, model.getBounds().height);
+                }
+
+                for (EnemyModel enemy : enemies) {
+                    if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
+
+                        enemy.takeDamage(1, model.getX());
+                        model.setCurrentSoul(model.getCurrentSoul() + 11);
+
+                        if (model.getAttackDirection() == -1) {
+                            model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
+                            model.setCanDoubleJump(true);
+                        }
+                    }
                 }
             }
         }

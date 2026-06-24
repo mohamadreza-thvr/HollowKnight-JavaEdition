@@ -1,7 +1,6 @@
 package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hallowKnight.gameplay.hud.HudView;
 import com.hallowKnight.gameplay.knight.KnightView;
 import com.hallowKnight.gameplay.map.MapView;
+import com.hallowKnight.gameplay.enemy.EnemyView;
 
 public class GameView {
     private GameModel model;
@@ -23,9 +23,10 @@ public class GameView {
 
     private KnightView knightView;
 
+    private EnemyView enemyView;
+
     private com.badlogic.gdx.graphics.Texture background;
     private HudView hudView;
-
 
     public GameView(GameModel model) {
         this.model = model;
@@ -40,6 +41,7 @@ public class GameView {
         this.shapeRenderer = new ShapeRenderer();
 
         this.knightView = new KnightView(model.getKnightModel());
+        this.enemyView = new EnemyView();
     }
 
     public void render(float delta) {
@@ -77,6 +79,7 @@ public class GameView {
         mapView.render(camera);
 
         batch.begin();
+        enemyView.render(batch, delta, model.getEnemies());
         knightView.render(batch, delta);
         batch.end();
 
@@ -96,5 +99,7 @@ public class GameView {
         batch.dispose();
         shapeRenderer.dispose();
         knightView.dispose();
+
+        if (enemyView != null) enemyView.dispose();
     }
 }

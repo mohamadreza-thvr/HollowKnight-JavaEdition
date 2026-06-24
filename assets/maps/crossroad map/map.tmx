@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="600" height="200" tilewidth="8" tileheight="8" infinite="0" nextlayerid="12" nextobjectid="51">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="600" height="200" tilewidth="8" tileheight="8" infinite="0" nextlayerid="12" nextobjectid="56">
  <tileset firstgid="1" source="floor1.tsx"/>
  <tileset firstgid="417" source="rock2.tsx"/>
  <tileset firstgid="1037" source="objects.tsx"/>
@@ -1042,11 +1042,14 @@
   <object id="45" name="Spawn Knight" x="210.667" y="1394.67">
    <point/>
   </object>
-  <object id="46" name="Spawn Enemy" x="3713.33" y="702.667">
+  <object id="46" name="Spawn Crawlid" x="3703.33" y="716.667">
    <point/>
   </object>
   <object id="47" name="deadly" x="2626" y="1352" width="1606" height="276"/>
   <object id="49" name="Gate" x="4798" y="782">
+   <point/>
+  </object>
+  <object id="55" name="Spawn Mosquito" x="3200" y="798">
    <point/>
   </object>
  </objectgroup>

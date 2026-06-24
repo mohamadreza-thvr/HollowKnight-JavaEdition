@@ -21,14 +21,18 @@ public class MapModel {
     private Rectangle gateBounds;
 
     private Vector2 knightSpawn;
-    private List<Vector2> enemySpawns;
+
+    private List<Vector2> crawlidSpawns;
+    private List<Vector2> mosquitoSpawns;
 
     public MapModel(String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
 
         solidBounds = new ArrayList<>();
         deadlyBounds = new ArrayList<>();
-        enemySpawns = new ArrayList<>();
+
+        crawlidSpawns = new ArrayList<>();
+        mosquitoSpawns = new ArrayList<>();
 
         knightSpawn = new Vector2(100, 200);
 
@@ -48,25 +52,36 @@ public class MapModel {
         for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
             for (MapObject object : tiledMap.getLayers().get(i).getObjects()) {
 
-                if (object instanceof RectangleMapObject) {
-                    Rectangle rect = ((RectangleMapObject) object).getRectangle();
-                    String name = object.getName();
+                String name = object.getName();
+                String cleanName = (name != null) ? name.trim().replaceAll("\\s+", " ") : null;
 
-                    if (name != null) {
-                        if (name.equalsIgnoreCase("deadly")) {
+                Float objX = object.getProperties().get("x", Float.class);
+                Float objY = object.getProperties().get("y", Float.class);
+
+
+                if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Knight")) {
+                    knightSpawn.set(objX, objY);
+                }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawlid")) {
+                    crawlidSpawns.add(new Vector2(objX, objY));
+                }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Mosquito")) {
+                    mosquitoSpawns.add(new Vector2(objX, objY));
+                }
+
+                else if (object instanceof RectangleMapObject) {
+                    Rectangle rect = ((RectangleMapObject) object).getRectangle();
+
+                    if (cleanName != null) {
+                        if (cleanName.equalsIgnoreCase("deadly")) {
                             deadlyBounds.add(rect);
                             solidBounds.add(rect);
-                        } else if (name.equalsIgnoreCase("Spawn Knight")) {
-                            knightSpawn.set(rect.x, rect.y);
-                        } else if (name.equalsIgnoreCase("Spawn Enemy")) {
-                            enemySpawns.add(new Vector2(rect.x, rect.y));
-                        } else if (name.equalsIgnoreCase("Gate")) {
+                        } else if (cleanName.equalsIgnoreCase("Gate")) {
                             gateBounds = rect;
                         } else {
                             solidBounds.add(rect);
                         }
                     } else {
-
                         solidBounds.add(rect);
                     }
                 }
@@ -79,7 +94,10 @@ public class MapModel {
     public List<Rectangle> getDeadlyBounds() { return deadlyBounds; }
     public Rectangle getGateBounds() { return gateBounds; }
     public Vector2 getKnightSpawn() { return knightSpawn; }
-    public List<Vector2> getEnemySpawns() { return enemySpawns; }
+
+    public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
+    public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
+
     public float getMapPixelWidth() { return mapPixelWidth; }
     public float getMapPixelHeight() { return mapPixelHeight; }
 
