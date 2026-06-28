@@ -6,9 +6,8 @@ public class SettingsModel {
     private String currentLanguage;
 
     public SettingsModel() {
-        // مقادیر پیش‌فرض
-        this.musicVolume = 0.5f; // ۵۰ درصد
-        this.sfxVolume = 0.8f;   // ۸۰ درصد
+        this.musicVolume = 0.5f;
+        this.sfxVolume = 0.8f;
         this.currentLanguage = "English";
     }
 

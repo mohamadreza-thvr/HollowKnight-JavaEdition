@@ -28,6 +28,8 @@ public class EnemyController {
                     updateCrawlid((CrawlidModel) enemy, delta, mapModel);
                 } else if (enemy instanceof MosquitoModel) {
                     updateMosquito((MosquitoModel) enemy, delta, knight);
+                } else if (enemy instanceof HuskModel) {
+                    updateHusk((HuskModel) enemy, delta, mapModel, knight);
                 }
             }
 
@@ -119,6 +121,96 @@ public class EnemyController {
         }
     }
 
+    private void updateHusk(HuskModel husk, float delta, MapModel mapModel, KnightModel knight) {
+
+        float visionWidth = 350f;
+        if (husk.isFacingRight()) {
+            husk.getVisionBounds().set(husk.getX() + husk.getBounds().width, husk.getY(), visionWidth, husk.getBounds().height);
+        } else {
+            husk.getVisionBounds().set(husk.getX() - visionWidth, husk.getY(), visionWidth, husk.getBounds().height);
+        }
+
+        if (!husk.isAggro() && (husk.getCurrentState() == EnemyState.WALK || husk.getCurrentState() == EnemyState.IDLE)) {
+            if (husk.getVisionBounds().overlaps(knight.getBounds())) {
+                husk.setAggro(true);
+                husk.setCurrentState(EnemyState.ANTICIPATE);
+                husk.setStateTimer(0f);
+                husk.setVelocityX(0);
+            }
+        }
+
+        if (husk.getCurrentState() == EnemyState.IDLE) {
+            husk.setVelocityX(0);
+            husk.setStateTimer(husk.getStateTimer() + delta);
+            if (husk.getStateTimer() > 2.0f) {
+                husk.setCurrentState(EnemyState.WALK);
+                husk.setStateTimer(0f);
+            }
+        }
+        else if (husk.getCurrentState() == EnemyState.WALK) {
+            float speed = 80f;
+            husk.setVelocityX(husk.isFacingRight() ? speed : -speed);
+            husk.setStateTimer(husk.getStateTimer() + delta);
+
+            if (husk.getStateTimer() > 4.0f) {
+                husk.setCurrentState(EnemyState.IDLE);
+                husk.setStateTimer(0f);
+            }
+        }
+        else if (husk.getCurrentState() == EnemyState.TURN) {
+            husk.setVelocityX(0);
+            husk.setStateTimer(husk.getStateTimer() + delta);
+            if (husk.getStateTimer() > 0.2f) {
+                husk.setFacingRight(!husk.isFacingRight());
+                husk.setCurrentState(EnemyState.WALK);
+                husk.setStateTimer(0f);
+            }
+        }
+        else if (husk.getCurrentState() == EnemyState.ANTICIPATE) {
+            husk.setVelocityX(0);
+            husk.setStateTimer(husk.getStateTimer() + delta);
+            if (husk.getStateTimer() >= 1f) {
+                husk.setCurrentState(EnemyState.DASH);
+                husk.setStateTimer(0f);
+            }
+        }
+        else if (husk.getCurrentState() == EnemyState.DASH) {
+            float dashSpeed = 400f;
+            husk.setVelocityX(husk.isFacingRight() ? dashSpeed : -dashSpeed);
+
+            if (husk.getVelocityX() == 0) {
+                husk.setCurrentState(EnemyState.IDLE);
+                husk.setAggro(false);
+                husk.setStateTimer(0f);
+            }
+        }
+
+        if (husk.isGrounded()) {
+            float checkX = husk.isFacingRight() ? husk.getX() + husk.getBounds().width + 5f : husk.getX() - 10f;
+            Rectangle edgeChecker = new Rectangle(checkX, husk.getY() - 15f, 5f, 15f);
+
+            boolean isGroundAhead = false;
+            for (Rectangle solid : mapModel.getSolidBounds()) {
+                if (edgeChecker.overlaps(solid)) {
+                    isGroundAhead = true;
+                    break;
+                }
+            }
+
+            if (!isGroundAhead) {
+                if (husk.getCurrentState() == EnemyState.WALK) {
+                    husk.setCurrentState(EnemyState.TURN);
+                    husk.setStateTimer(0f);
+                } else if (husk.getCurrentState() == EnemyState.DASH || husk.getCurrentState() == EnemyState.ANTICIPATE) {
+                    husk.setCurrentState(EnemyState.IDLE);
+                    husk.setAggro(false);
+                    husk.setVelocityX(0);
+                    husk.setStateTimer(0f);
+                }
+            }
+        }
+    }
+
     private void applyPhysics(EnemyModel enemy, float delta, MapModel mapModel) {
         enemy.setGrounded(false);
 
@@ -130,7 +222,7 @@ public class EnemyController {
             if (enemy.getBounds().overlaps(solid)) {
 
                 boolean isActualWall = true;
-                if (enemy instanceof CrawlidModel) {
+                if (enemy instanceof CrawlidModel || enemy instanceof HuskModel) {
                     isActualWall = (solid.y + solid.height > enemy.getY() + 5f);
                 }
 
@@ -148,12 +240,27 @@ public class EnemyController {
             }
         }
 
-        if (hitWall && enemy instanceof CrawlidModel && !enemy.isDead() && !enemy.isKnockedBack()) {
-            ((CrawlidModel) enemy).setCurrentState(EnemyState.TURN);
-            ((CrawlidModel) enemy).setStateTimer(0f);
+        if (hitWall && !enemy.isDead() && !enemy.isKnockedBack()) {
+            if (enemy instanceof CrawlidModel) {
+                ((CrawlidModel) enemy).setCurrentState(EnemyState.TURN);
+                ((CrawlidModel) enemy).setStateTimer(0f);
+            }
+            else if (enemy instanceof HuskModel) {
+                HuskModel husk = (HuskModel) enemy;
+
+                if (husk.getCurrentState() == EnemyState.WALK) {
+                    husk.setCurrentState(EnemyState.TURN);
+                    husk.setStateTimer(0f);
+                }
+                else if (husk.getCurrentState() == EnemyState.DASH) {
+                    husk.setCurrentState(EnemyState.IDLE);
+                    husk.setAggro(false);
+                    husk.setStateTimer(0f);
+                }
+            }
         }
 
-        if (enemy instanceof CrawlidModel || enemy.isDead() || enemy.isKnockedBack()) {
+        if (enemy instanceof CrawlidModel || enemy instanceof HuskModel || enemy.isDead() || enemy.isKnockedBack()) {
             enemy.setVelocityY(enemy.getVelocityY() - (Constance.GRAVITY * delta));
         }
 

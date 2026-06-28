@@ -23,7 +23,7 @@ public class PauseView {
         stage = new Stage(new StretchViewport(1280, 720));
         UIManager uiManager = UIManager.getInstance();
 
-        // ساخت یک پس‌زمینه نیمه‌شفاف تاریک برای اینکه بازی در پس‌زمینه دیده شود
+
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0, 0, 0, 0.7f)); // مشکی با ۷۰ درصد شفافیت
         pixmap.fill();

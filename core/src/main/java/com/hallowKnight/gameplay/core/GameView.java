@@ -1,16 +1,19 @@
 package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.hallowKnight.gameplay.hud.HudView;
 import com.hallowKnight.gameplay.knight.KnightView;
 import com.hallowKnight.gameplay.map.MapView;
 import com.hallowKnight.gameplay.enemy.EnemyView;
+import com.hallowKnight.gameplay.enemy.EnemyModel;
 
 public class GameView {
     private GameModel model;
@@ -82,6 +85,40 @@ public class GameView {
         enemyView.render(batch, delta, model.getEnemies());
         knightView.render(batch, delta);
         batch.end();
+
+        // =========================================================
+        // --- شروع بخش دیباگ: رسم هیت‌باکس‌ها ---
+        // =========================================================
+        shapeRenderer.setProjectionMatrix(camera.combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
+        // ۱. رسم محیط‌های جامد (دیوارها و زمین) با رنگ قرمز
+        shapeRenderer.setColor(Color.RED);
+        for (Rectangle solid : model.getCurrentMap().getSolidBounds()) {
+            shapeRenderer.rect(solid.x, solid.y, solid.width, solid.height);
+        }
+
+        // ۲. رسم محیط‌های کشنده (تیغ‌ها) با رنگ زرد
+        shapeRenderer.setColor(Color.YELLOW);
+        for (Rectangle deadly : model.getCurrentMap().getDeadlyBounds()) {
+            shapeRenderer.rect(deadly.x, deadly.y, deadly.width, deadly.height);
+        }
+
+        // ۳. رسم دشمنان با رنگ بنفش
+        shapeRenderer.setColor(Color.PURPLE);
+        for (EnemyModel enemy : model.getEnemies()) {
+            Rectangle enemyRect = enemy.getBounds();
+            shapeRenderer.rect(enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height);
+        }
+
+        // ۴. رسم شوالیه با رنگ سبز
+        shapeRenderer.setColor(Color.GREEN);
+        Rectangle knightRect = model.getKnightModel().getBounds();
+
+        shapeRenderer.rect(knightRect.x, knightRect.y, knightRect.width, knightRect.height);
+
+        shapeRenderer.end();
+        // =========================================================
 
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 

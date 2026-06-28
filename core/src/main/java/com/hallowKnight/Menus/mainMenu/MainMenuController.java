@@ -45,7 +45,6 @@ public class MainMenuController {
             }
         });
 
-        //----------------------------------
 
         view.getGuideButton().addListener(new ClickListener() {
 
@@ -65,7 +64,6 @@ public class MainMenuController {
             }
         });
 
-        //----------------------------------
 
         view.getAchievementsButton().addListener(new ClickListener() {
 

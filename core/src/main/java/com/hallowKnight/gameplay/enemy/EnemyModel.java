@@ -16,7 +16,7 @@ public abstract class EnemyModel {
 
     protected boolean hitGroundAfterDeath = false;
 
-    protected boolean isGrounded = false; // ← اضافه شد
+    protected boolean isGrounded = false;
 
     public EnemyModel(float x, float y, float width, float height, int health) {
         this.x = x;
@@ -70,6 +70,6 @@ public abstract class EnemyModel {
     public void setKnockbackTimer(float knockbackTimer) { this.knockbackTimer = knockbackTimer; }
     public boolean isHitGroundAfterDeath() { return hitGroundAfterDeath; }
     public void setHitGroundAfterDeath(boolean hitGroundAfterDeath) { this.hitGroundAfterDeath = hitGroundAfterDeath; }
-    public boolean isGrounded() { return isGrounded; }          // ← اضافه شد
-    public void setGrounded(boolean grounded) { this.isGrounded = grounded; } // ← اضافه شد
+    public boolean isGrounded() { return isGrounded; }
+    public void setGrounded(boolean grounded) { this.isGrounded = grounded; }
 }

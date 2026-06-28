@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.Constance;
 import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
-import com.hallowKnight.gameplay.enemy.EnemyModel; // اضافه شدن ایمپورت دشمنان
+import com.hallowKnight.gameplay.enemy.EnemyModel;
 
-import java.util.List; // اضافه شدن ایمپورت لیست
+import java.util.List;
 
 public class KnightController {
     private Game game;
@@ -22,7 +22,6 @@ public class KnightController {
         this.game = game;
     }
 
-    // ⚠️ لیست دشمنان به ورودی این متد اضافه شد
     public void update(float delta, List<EnemyModel> enemies) {
         if (delta > 0.05f) {
             delta = 0.05f;
@@ -46,11 +45,9 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        // پاس دادن لیست دشمنان به سیستم دکمه‌ها برای بررسی برخورد شمشیر
         handleInput(delta, enemies);
         applyPhysics(delta, mapModel);
 
-        // --- چک کردن برخورد بدن شوالیه با دشمنان (دمیج خوردن شوالیه) ---
         if (!model.isDead() && !model.isDashing()) {
             for (EnemyModel enemy : enemies) {
                 if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
@@ -134,7 +131,6 @@ public class KnightController {
             model.setWallJumpTimer(model.getWallJumpTimer() - delta);
         }
 
-        // --- سیستم حمله با شمشیر (Attack) ---
         if (!model.isDashing() && !model.isFocusing()) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.X) && !model.isAttacking()) {
                 model.setAttacking(true);
@@ -156,6 +152,16 @@ public class KnightController {
                     model.setAltSlash(!model.isAltSlash());
                     float ax = model.isFacingRight() ? model.getX() + model.getBounds().width : model.getX() - reach;
                     attackBox.set(ax, model.getY(), reach, model.getBounds().height);
+                }
+
+                if (model.getAttackDirection() == -1) {
+                    for (Rectangle spike : mapModel.getDeadlyBounds()) {
+                        if (attackBox.overlaps(spike)) {
+                            model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
+                            model.setCanDoubleJump(true);
+                            break;
+                        }
+                    }
                 }
 
                 for (EnemyModel enemy : enemies) {
@@ -308,7 +314,7 @@ public class KnightController {
 
         model.setGrounded(false);
 
-        for (com.badlogic.gdx.math.Rectangle solid : mapModel.getSolidBounds()) {
+        for (Rectangle solid : mapModel.getSolidBounds()) {
             if (model.getBounds().overlaps(solid)) {
                 if (model.getVelocityY() < 0) {
                     model.setY(solid.y + solid.height);
@@ -324,7 +330,7 @@ public class KnightController {
         }
     }
 
-    private boolean checkHazards(com.hallowKnight.gameplay.map.MapModel mapModel) {
+    private boolean checkHazards(MapModel mapModel) {
         for (Rectangle spike : mapModel.getDeadlyBounds()) {
             if (model.getBounds().overlaps(spike)) {
 

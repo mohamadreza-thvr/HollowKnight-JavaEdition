@@ -2,7 +2,7 @@ package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Game;
 import com.hallowKnight.gameplay.knight.KnightController;
-import com.hallowKnight.gameplay.enemy.EnemyController; // ⚠️ ایمپورت اضافه شد
+import com.hallowKnight.gameplay.enemy.EnemyController;
 
 public class GameController {
     private Game game;

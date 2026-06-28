@@ -1,6 +1,7 @@
 package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.math.Vector2;
+import com.hallowKnight.gameplay.enemy.HuskModel;
 import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
@@ -33,6 +34,10 @@ public class GameModel {
 
         for (Vector2 pos : currentMap.getMosquitoSpawns()) {
             enemies.add(new MosquitoModel(pos.x, pos.y));
+        }
+
+        for (Vector2 pos : currentMap.getHuskSpawns()) {
+            enemies.add(new HuskModel(pos.x, pos.y));
         }
     }
 

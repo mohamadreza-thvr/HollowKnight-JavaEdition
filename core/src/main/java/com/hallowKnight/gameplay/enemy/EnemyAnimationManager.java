@@ -11,19 +11,18 @@ import java.util.List;
 public class EnemyAnimationManager {
     private List<Texture> loadedTextures;
 
-    // --- انیمیشن‌های Crawlid ---
     private Animation<TextureRegion> crawlidWalk;
     private Animation<TextureRegion> crawlidTurn;
     private Animation<TextureRegion> crawlidDeathAir;
     private Animation<TextureRegion> crawlidDeathLand;
 
-    // --- انیمیشن‌های Mosquito ---
     private Animation<TextureRegion> mosquitoIdle;
     private Animation<TextureRegion> mosquitoTurn;
     private Animation<TextureRegion> mosquitoAnticipate;
     private Animation<TextureRegion> mosquitoAttack;
     private Animation<TextureRegion> mosquitoDeathAir;
     private Animation<TextureRegion> mosquitoDeathLand;
+    private Animation<TextureRegion> huskIdle, huskWalk, huskTurn, huskAnticipate, huskLunge, huskDeath;
 
     private float stateTime = 0f;
 
@@ -44,6 +43,13 @@ public class EnemyAnimationManager {
         mosquitoAttack = createSpriteSheet("animation/Mosquito/Attack.png", 3, 0.1f);
         mosquitoDeathAir = createSpriteSheet("animation/Mosquito/Death Air.png", 3, 0.1f);
         mosquitoDeathLand = createSpriteSheet("animation/Mosquito/Death Land.png", 2, 0.1f);
+
+        huskIdle = createSpriteSheet("animation/Husk/Idle.png", 6, 0.3f);
+        huskWalk = createSpriteSheet("animation/Husk/Walk.png", 7, 0.3f);
+        huskTurn = createSpriteSheet("animation/Husk/Turn.png", 2, 0.1f);
+        huskAnticipate = createSpriteSheet("animation/Husk/Attack Anticipate.png", 5, 0.1f);
+        huskLunge = createSpriteSheet("animation/Husk/Attack Lunge.png", 12, 0.1f);
+        huskDeath = createSpriteSheet("animation/Husk/Death Land.png", 8, 0.1f);
     }
 
     private Animation<TextureRegion> createSpriteSheet(String fileName, int columns, float frameDuration) {
@@ -88,6 +94,21 @@ public class EnemyAnimationManager {
                 loop = false;
             } else {
                 currentAnim = mosquitoIdle;
+            }
+        } else if (enemy instanceof HuskModel) {
+            HuskModel husk = (HuskModel) enemy;
+            if (husk.isDead()) {
+                currentAnim = huskDeath; loop = false;
+            } else if (husk.getCurrentState() == EnemyState.ANTICIPATE) {
+                currentAnim = huskAnticipate; loop = false;
+            } else if (husk.getCurrentState() == EnemyState.DASH) {
+                currentAnim = huskLunge;
+            } else if (husk.getCurrentState() == EnemyState.TURN) {
+                currentAnim = huskTurn; loop = false;
+            } else if (husk.getCurrentState() == EnemyState.WALK) {
+                currentAnim = huskWalk;
+            } else {
+                currentAnim = huskIdle;
             }
         }
 

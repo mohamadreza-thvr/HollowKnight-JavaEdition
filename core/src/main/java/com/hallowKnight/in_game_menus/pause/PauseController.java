@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class PauseController {
     private PauseView view;
 
-    // یک رابط (Interface) برای اینکه به اسکرین اصلی بگوییم وضعیت را عوض کند
     public interface PauseListener {
         void onContinueClicked();
         void onSettingsClicked();

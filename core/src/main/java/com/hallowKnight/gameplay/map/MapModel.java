@@ -24,6 +24,7 @@ public class MapModel {
 
     private List<Vector2> crawlidSpawns;
     private List<Vector2> mosquitoSpawns;
+    private List<Vector2> huskSpawns;
 
     public MapModel(String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
@@ -33,6 +34,8 @@ public class MapModel {
 
         crawlidSpawns = new ArrayList<>();
         mosquitoSpawns = new ArrayList<>();
+        huskSpawns = new ArrayList<>();
+
 
         knightSpawn = new Vector2(100, 200);
 
@@ -67,6 +70,8 @@ public class MapModel {
                 }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Mosquito")) {
                     mosquitoSpawns.add(new Vector2(objX, objY));
+                } else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Husk")) {
+                    huskSpawns.add(new Vector2(objX, objY));
                 }
 
                 else if (object instanceof RectangleMapObject) {
@@ -97,6 +102,8 @@ public class MapModel {
 
     public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
     public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
+    public List<Vector2> getHuskSpawns() { return huskSpawns; }
+
 
     public float getMapPixelWidth() { return mapPixelWidth; }
     public float getMapPixelHeight() { return mapPixelHeight; }
