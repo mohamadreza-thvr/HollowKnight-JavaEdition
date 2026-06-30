@@ -15,6 +15,7 @@ import com.hallowKnight.gameplay.knight.KnightView;
 import com.hallowKnight.gameplay.map.MapView;
 import com.hallowKnight.gameplay.enemy.EnemyView;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
+import com.hallowKnight.gameplay.spells.VengefulSpiritView;
 
 public class GameView {
     private GameModel model;
@@ -32,6 +33,7 @@ public class GameView {
 
     private com.badlogic.gdx.graphics.Texture background;
     private HudView hudView;
+    private VengefulSpiritView spellView;
 
     public GameView(GameModel model) {
         this.model = model;
@@ -47,6 +49,7 @@ public class GameView {
 
         this.knightView = new KnightView(model.getKnightModel());
         this.enemyView = new EnemyView();
+        this.spellView = new VengefulSpiritView();
     }
 
     public void render(float delta) {
@@ -105,6 +108,9 @@ public class GameView {
         batch.begin();
         enemyView.render(batch, delta, model.getEnemies());
         knightView.render(batch, delta);
+
+        spellView.render(batch, model.getActiveSpells());
+
         zoteView.renderWorld(batch, delta, model.getZote());
         batch.end();
 
@@ -167,5 +173,6 @@ public class GameView {
         zoteView.dispose();
 
         if (enemyView != null) enemyView.dispose();
+        if (spellView != null) spellView.dispose();
     }
 }

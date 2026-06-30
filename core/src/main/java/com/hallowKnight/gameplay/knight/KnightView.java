@@ -77,6 +77,20 @@ public class KnightView {
                 visualWidth,
                 visualHeight);
         }
+
+        if (model.isCasting()) {
+            float castStateTime = 0.6f - model.getCastTimer();
+            TextureRegion blastFrame = animationManager.getBlastEffectFrame(castStateTime, model.isFacingRight());
+
+            float blastWidth = 160f;
+            float blastHeight = 120f;
+
+
+            float blastX = model.isFacingRight() ? model.getX() + 30f : model.getX() - blastWidth + 30f;
+            float blastY = model.getY() - 10f;
+
+            batch.draw(blastFrame, blastX, blastY, blastWidth, blastHeight);
+        }
     }
 
     public void dispose() {

@@ -25,9 +25,9 @@ public class ZoteView {
         float visualHeight = 140;
         float offsetX = (visualWidth - zote.getBounds().width) / 2f;
 
-        batch.draw(frame, zote.getX() - offsetX, zote.getY(), visualWidth, visualHeight);
+        batch.draw(frame, zote.getX() - offsetX, zote.getY() - 20, visualWidth, visualHeight);
 
-        if (zote.isPlayerInRange() && !zote.isTalking() && zote.getCurrentState() == ZoteModel.State.IDLE) {
+        if (zote.isPlayerInRange() && !zote.isTalking() && zote.getCurrentState() == ZoteState.IDLE) {
             font.setColor(Color.WHITE);
             font.draw(batch, "UP: Talk", zote.getX() - 10, zote.getY() + 150);
         }

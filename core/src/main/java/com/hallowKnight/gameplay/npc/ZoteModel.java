@@ -7,9 +7,14 @@ public class ZoteModel {
     private Rectangle bounds;
     private boolean facingRight = false;
 
-    public enum State { IDLE, TALK, TURN, ATTACK, FALL, GET_UP, ROLL }
-    private State currentState = State.IDLE;
+    private ZoteState currentState = ZoteState.IDLE;
     private float stateTimer = 0f;
+    private int hitCount = 0;
+    private boolean isEnraged = false;
+    private float angerTimer = 0f;
+    public static final float ANGER_DURATION = 15f;
+    public static final float ROLL_DISTANCE_THRESHOLD = 250f;
+
 
     // دیالوگ‌ها
     private boolean playerInRange = false;
@@ -30,21 +35,22 @@ public class ZoteModel {
         "Precept 3: Always Be Rested."
     };
 
-    private int hitCount = 0;
-
     public ZoteModel(float x, float y) {
         this.x = x;
         this.y = y;
-        this.bounds = new Rectangle(x, y, 60, 80);
+        this.bounds = new Rectangle(x, y, 70, 90);
     }
 
     public void updateBounds() {
         bounds.setPosition(x, y);
     }
 
-    public void takeDamage() { hitCount++; }
+    public void takeDamage() {
+        if (isEnraged || currentState != ZoteState.IDLE) return;
+        hitCount++;
+    }
 
-    // Getters and Setters
+
     public float getX() { return x; }
     public void setX(float x) { this.x = x; }
     public float getY() { return y; }
@@ -52,8 +58,8 @@ public class ZoteModel {
     public Rectangle getBounds() { return bounds; }
     public boolean isFacingRight() { return facingRight; }
     public void setFacingRight(boolean f) { this.facingRight = f; }
-    public State getCurrentState() { return currentState; }
-    public void setCurrentState(State s) { this.currentState = s; }
+    public ZoteState getCurrentState() { return currentState; }
+    public void setCurrentState(ZoteState s) { this.currentState = s; }
     public float getStateTimer() { return stateTimer; }
     public void setStateTimer(float t) { this.stateTimer = t; }
     public boolean isPlayerInRange() { return playerInRange; }
@@ -68,4 +74,8 @@ public class ZoteModel {
     public void setCurrentDisplayLine(String s) { this.currentDisplayLine = s; }
     public int getHitCount() { return hitCount; }
     public void setHitCount(int h) { this.hitCount = h; }
+    public boolean isEnraged() { return isEnraged; }
+    public void setEnraged(boolean e) { this.isEnraged = e; }
+    public float getAngerTimer() { return angerTimer; }
+    public void setAngerTimer(float t) { this.angerTimer = t; }
 }

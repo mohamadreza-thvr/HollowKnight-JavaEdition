@@ -52,6 +52,9 @@ public class KnightModel {
     private int attackDirection = 0; // 0 = جلو، 1 = بالا، -1 = پایین
     private boolean isAltSlash = false;
 
+    private boolean isCasting = false;
+    private float castTimer = 0f;
+
     public KnightModel(float startX, float startY) {
         this.x = startX;
         this.y = startY;
@@ -138,6 +141,11 @@ public class KnightModel {
     public void heal(int amount) {
         if (currentHealth < 5 && !isDead) { currentHealth += amount; }
     }
+
+    public boolean isCasting() { return isCasting; }
+    public void setCasting(boolean casting) { this.isCasting = casting; }
+    public float getCastTimer() { return castTimer; }
+    public void setCastTimer(float castTimer) { this.castTimer = castTimer; }
 
     public void takeDamage(int amount) {
         if (!isInvulnerable && !isDead) {

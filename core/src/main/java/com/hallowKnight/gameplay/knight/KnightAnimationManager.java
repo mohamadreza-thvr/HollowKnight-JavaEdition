@@ -25,6 +25,8 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> dashAnimation;
     private Animation<TextureRegion> deathAnimation;
 
+    private Animation<TextureRegion> blastEffectAnimation;
+
     private Animation<TextureRegion> slashAnimation;
     private Animation<TextureRegion> slashAltAnimation;
     private Animation<TextureRegion> upSlashAnimation;
@@ -37,7 +39,6 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> downSlashEffectAnimation;
 
     private List<Texture> loadedTextures;
-
     private float stateTime = 0f;
 
     public KnightAnimationManager() {
@@ -62,6 +63,14 @@ public class KnightAnimationManager {
         String[] focusFiles = {"animation/Focus_001.png", "animation/Focus_002.png", "animation/Focus_003.png",
             "animation/Focus_004.png", "animation/Focus_005.png", "animation/Focus_006.png"};
         focusAnimation = createAnimationFromSeparateFiles(focusFiles, 0.1f);
+
+        String[] blastFiles = {
+            "animation/Projectile/Blast_000.png", "animation/Projectile/Blast_001.png",
+            "animation/Projectile/Blast_002.png", "animation/Projectile/Blast_003.png",
+            "animation/Projectile/Blast_004.png", "animation/Projectile/Blast_005.png",
+            "animation/Projectile/Blast_006.png", "animation/Projectile/Blast_007.png"
+        };
+        blastEffectAnimation = createAnimationFromSeparateFiles(blastFiles, 0.77f);
 
         wallSlideAnimation = createSpriteSheetAnimation("animation/Wall Slide.png", 4, 1, 0.1f);
         wallJumpAnimation = createSpriteSheetAnimation("animation/Walljump.png", 9, 1, 0.1f);
@@ -118,9 +127,13 @@ public class KnightAnimationManager {
             animationTime = model.getDeathTimer();
             loop = false;
         }
+        else if (model.isCasting()) {
+            currentAnim = focusAnimation;
+            animationTime = 0.4f - model.getCastTimer();
+            loop = false;
+        }
         else if (model.isDashing()) {
             currentAnim = dashAnimation;
-  //          loop = false;
         }
         else if (model.isAttacking()) {
             if (model.getAttackDirection() == 1) {
@@ -131,7 +144,6 @@ public class KnightAnimationManager {
                 currentAnim = model.isAltSlash() ? slashAltAnimation : slashAnimation;
             }
             animationTime = model.getAttackTimer();
-//            loop = false;
         }
         else if (model.isFocusing()) {
             currentAnim = focusAnimation;
@@ -141,12 +153,10 @@ public class KnightAnimationManager {
         }
         else if (model.getWallJumpTimer() > 0) {
             currentAnim = wallJumpAnimation;
- //           loop = false;
         }
         else if (!model.isGrounded()) {
             if (model.isDoubleJumping() && model.getVelocityY() > 0) {
                 currentAnim = doubleJumpAnimation;
- //               loop = false;
             } else if (model.getVelocityY() > 0) {
                 currentAnim = jumpAnimation;
             } else {
@@ -158,6 +168,7 @@ public class KnightAnimationManager {
                 currentAnim = runAnimation;
             } else if (model.isLookingUp()) {
                 currentAnim = lookUpAnimation;
+                loop = false;
             } else if (model.isLookingDown()) {
                 currentAnim = lookDownAnimation;
             } else if (model.isLanding()) {
@@ -182,6 +193,14 @@ public class KnightAnimationManager {
     public Animation<TextureRegion> getSlashEffectAltAnimation() { return slashEffectAltAnimation; }
     public Animation<TextureRegion> getUpSlashEffectAnimation() { return upSlashEffectAnimation; }
     public Animation<TextureRegion> getDownSlashEffectAnimation() { return downSlashEffectAnimation; }
+
+    public TextureRegion getBlastEffectFrame(float stateTime, boolean facingRight) {
+        TextureRegion frame = blastEffectAnimation.getKeyFrame(stateTime, false);
+        if (frame.isFlipX() == facingRight) {
+            frame.flip(true, false);
+        }
+        return frame;
+    }
 
     public void dispose() {
         for (Texture texture : loadedTextures) {

@@ -9,6 +9,7 @@ import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteModel;
+import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class KnightController {
         this.game = game;
     }
 
-    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote) {
+    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells) {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -46,7 +47,7 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        handleInput(delta, enemies, zote);
+        handleInput(delta, enemies, zote, activeSpells);
         applyPhysics(delta, mapModel);
 
         if (!model.isDead() && !model.isDashing()) {
@@ -96,7 +97,7 @@ public class KnightController {
         }
     }
 
-    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote) {
+    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells) {
 
         if (zote != null && zote.isTalking()) {
             model.setVelocityX(0);
@@ -104,6 +105,16 @@ public class KnightController {
                 model.setDashing(false);
             }
             model.setAttacking(false);
+            return;
+        }
+
+        if (model.isCasting()) {
+            model.setCastTimer(model.getCastTimer() - delta);
+            model.setVelocityX(0);
+            model.setVelocityY(0);
+            if (model.getCastTimer() <= 0) {
+                model.setCasting(false);
+            }
             return;
         }
 
@@ -115,6 +126,18 @@ public class KnightController {
                 model.setDashing(false);
                 model.setVelocityX(0);
             }
+            return;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S) && model.getCurrentSoul() >= 33) {
+            model.setCasting(true);
+            model.setCastTimer(0.4f);
+            model.setCurrentSoul(model.getCurrentSoul() - 33);
+
+            float spellX = model.isFacingRight() ? model.getX() + 50f : model.getX() - 50f;
+            float spellY = model.getY() + 20f;
+
+            activeSpells.add(new VengefulSpiritModel(spellX, spellY, model.isFacingRight()));
             return;
         }
 
@@ -261,6 +284,9 @@ public class KnightController {
     }
 
     private void applyPhysics(float delta, MapModel mapModel) {
+
+        if (model.isCasting()) return;
+
         boolean touchingWall = false;
 
         model.setX(model.getX() + (model.getVelocityX() * delta));

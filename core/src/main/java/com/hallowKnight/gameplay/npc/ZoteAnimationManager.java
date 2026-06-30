@@ -15,12 +15,12 @@ public class ZoteAnimationManager {
 
     public ZoteAnimationManager() {
         loadedTextures = new ArrayList<>();
-        idle = createSpriteSheet("animation/Zote/Idle.png", 5, 0.1f);
+        idle = createSpriteSheet("animation/Zote/Idle.png", 5, 0.3f);
         talk = createSpriteSheet("animation/Zote/Talk.png", 5, 0.1f);
-        turn = createSpriteSheet("animation/Zote/Turn.png", 2, 0.1f);
-        attack = createSpriteSheet("animation/Zote/Attack.png", 4, 0.1f);
-        fall = createSpriteSheet("animation/Zote/Fall.png", 5, 0.1f);
-        getUp = createSpriteSheet("animation/Zote/Get Up.png", 4, 0.1f);
+        turn = createSpriteSheet("animation/Zote/Turn.png", 2, 0.2f);
+        attack = createSpriteSheet("animation/Zote/Attack.png", 4, 0.15f);
+        fall = createSpriteSheet("animation/Zote/Fall.png", 5, 0.3f);
+        getUp = createSpriteSheet("animation/Zote/Get Up.png", 4, 0.3f);
         roll = createSpriteSheet("animation/Zote/Roll.png", 3, 0.1f);
     }
 
@@ -39,12 +39,12 @@ public class ZoteAnimationManager {
         Animation<TextureRegion> currentAnim = idle;
         boolean loop = true;
 
-        if (zote.getCurrentState() == ZoteModel.State.ATTACK) { currentAnim = attack; }
-        else if (zote.getCurrentState() == ZoteModel.State.TALK) { currentAnim = talk; }
-        else if (zote.getCurrentState() == ZoteModel.State.FALL) { currentAnim = fall; loop = false; }
-        else if (zote.getCurrentState() == ZoteModel.State.GET_UP) { currentAnim = getUp; loop = false; }
-        else if (zote.getCurrentState() == ZoteModel.State.TURN) { currentAnim = turn; loop = false; }
-        else if (zote.getCurrentState() == ZoteModel.State.ROLL) { currentAnim = roll; }
+        if (zote.getCurrentState() == ZoteState.ATTACK) { currentAnim = attack; }
+        else if (zote.getCurrentState() == ZoteState.TALK) { currentAnim = talk; }
+        else if (zote.getCurrentState() == ZoteState.FALL) { currentAnim = fall; loop = false; }
+        else if (zote.getCurrentState() == ZoteState.GET_UP) { currentAnim = getUp; loop = false; }
+        else if (zote.getCurrentState() == ZoteState.TURN) { currentAnim = turn; loop = false; }
+        else if (zote.getCurrentState() == ZoteState.ROLL) { currentAnim = roll; }
 
         TextureRegion frame = currentAnim.getKeyFrame(stateTime, loop);
         if (frame.isFlipX() != zote.isFacingRight()) {
