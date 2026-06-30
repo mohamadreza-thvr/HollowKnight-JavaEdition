@@ -5,6 +5,7 @@ import com.hallowKnight.gameplay.enemy.*;
 import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.npc.ZoteModel;
+import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class GameModel {
 
     private List<EnemyModel> enemies;
     private List<VengefulSpiritModel> activeSpells;
+    private List<HowlingWraithsModel> activeWraiths;
 
     public GameModel() {
 
@@ -29,6 +31,7 @@ public class GameModel {
 
         enemies = new ArrayList<>();
         activeSpells = new ArrayList<>();
+        activeWraiths = new ArrayList<>();
 
         for (Vector2 pos : currentMap.getCrawlidSpawns()) {
             enemies.add(new CrawlidModel(pos.x, pos.y));
@@ -52,4 +55,5 @@ public class GameModel {
     public List<EnemyModel> getEnemies() { return enemies; }
     public ZoteModel getZote() { return zote; }
     public List<VengefulSpiritModel> getActiveSpells() { return activeSpells; }
+    public List<HowlingWraithsModel> getActiveWraiths() { return activeWraiths; }
 }

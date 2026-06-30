@@ -9,6 +9,7 @@ import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteModel;
+import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class KnightController {
         this.game = game;
     }
 
-    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells) {
+    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -47,7 +48,7 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        handleInput(delta, enemies, zote, activeSpells);
+        handleInput(delta, enemies, zote, activeSpells, activeWraiths);
         applyPhysics(delta, mapModel);
 
         if (!model.isDead() && !model.isDashing()) {
@@ -73,7 +74,7 @@ public class KnightController {
 
         if (model.isGrounded() && model.getVelocityY() == 0) {
             boolean nearHazard = false;
-            for (com.badlogic.gdx.math.Rectangle spike : mapModel.getDeadlyBounds()) {
+            for (Rectangle spike : mapModel.getDeadlyBounds()) {
                 if (model.getBounds().overlaps(spike)) {
                     nearHazard = true;
                     break;
@@ -97,7 +98,7 @@ public class KnightController {
         }
     }
 
-    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells) {
+    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
 
         if (zote != null && zote.isTalking()) {
             model.setVelocityX(0);
@@ -130,14 +131,20 @@ public class KnightController {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.S) && model.getCurrentSoul() >= 33) {
-            model.setCasting(true);
-            model.setCastTimer(0.4f);
             model.setCurrentSoul(model.getCurrentSoul() - 33);
+            model.setCasting(true);
 
-            float spellX = model.isFacingRight() ? model.getX() + 50f : model.getX() - 50f;
-            float spellY = model.getY() + 20f;
-
-            activeSpells.add(new VengefulSpiritModel(spellX, spellY, model.isFacingRight()));
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                model.setCastingUp(true);
+                model.setCastTimer(0.65f);
+                activeWraiths.add(new HowlingWraithsModel(model.getX(), model.getY(), model.getBounds().width, model.getBounds().height));
+            } else {
+                model.setCastingUp(false);
+                model.setCastTimer(0.4f);
+                float spellX = model.isFacingRight() ? model.getX() + 50f : model.getX() - 50f;
+                float spellY = model.getY() + 20f;
+                activeSpells.add(new VengefulSpiritModel(spellX, spellY, model.isFacingRight()));
+            }
             return;
         }
 
@@ -154,7 +161,6 @@ public class KnightController {
             model.setWallSliding(false);
             return;
         }
-
 
         model.setVelocityX(0);
         model.setLookingUp(false);
@@ -197,7 +203,6 @@ public class KnightController {
                     }
                 }
 
-                // برخورد شمشیر
                 for (EnemyModel enemy : enemies) {
                     if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
                         enemy.takeDamage(1, model.getX());
@@ -263,7 +268,6 @@ public class KnightController {
             }
         }
 
-        // تمرکز
         if (Gdx.input.isKeyPressed(Input.Keys.A) && model.isGrounded()) {
             model.setVelocityX(0);
             model.setFocusing(true);
@@ -337,7 +341,6 @@ public class KnightController {
             model.setWallSliding(false);
         }
 
-        // اعمال جاذبه
         if (!model.isDashing()) {
             if (model.isWallSliding()) {
                 float maxSlideSpeed = -Constance.KNIGHT_SPEED * 0.4f;

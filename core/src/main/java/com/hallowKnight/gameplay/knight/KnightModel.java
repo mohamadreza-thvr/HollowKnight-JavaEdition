@@ -53,6 +53,7 @@ public class KnightModel {
     private boolean isAltSlash = false;
 
     private boolean isCasting = false;
+    private boolean castingUp = false;
     private float castTimer = 0f;
 
     public KnightModel(float startX, float startY) {
@@ -146,6 +147,8 @@ public class KnightModel {
     public void setCasting(boolean casting) { this.isCasting = casting; }
     public float getCastTimer() { return castTimer; }
     public void setCastTimer(float castTimer) { this.castTimer = castTimer; }
+    public boolean isCastingUp() { return castingUp; }
+    public void setCastingUp(boolean c) { this.castingUp = c; }
 
     public void takeDamage(int amount) {
         if (!isInvulnerable && !isDead) {

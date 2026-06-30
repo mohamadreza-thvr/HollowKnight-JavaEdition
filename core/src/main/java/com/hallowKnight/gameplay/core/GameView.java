@@ -15,6 +15,7 @@ import com.hallowKnight.gameplay.knight.KnightView;
 import com.hallowKnight.gameplay.map.MapView;
 import com.hallowKnight.gameplay.enemy.EnemyView;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
+import com.hallowKnight.gameplay.spells.HowlingWraithsView;
 import com.hallowKnight.gameplay.spells.VengefulSpiritView;
 
 public class GameView {
@@ -34,6 +35,7 @@ public class GameView {
     private com.badlogic.gdx.graphics.Texture background;
     private HudView hudView;
     private VengefulSpiritView spellView;
+    private HowlingWraithsView wraithsView;
 
     public GameView(GameModel model) {
         this.model = model;
@@ -50,6 +52,7 @@ public class GameView {
         this.knightView = new KnightView(model.getKnightModel());
         this.enemyView = new EnemyView();
         this.spellView = new VengefulSpiritView();
+        this.wraithsView = new HowlingWraithsView();
     }
 
     public void render(float delta) {
@@ -110,6 +113,7 @@ public class GameView {
         knightView.render(batch, delta);
 
         spellView.render(batch, model.getActiveSpells());
+        wraithsView.render(batch, model.getActiveWraiths());
 
         zoteView.renderWorld(batch, delta, model.getZote());
         batch.end();

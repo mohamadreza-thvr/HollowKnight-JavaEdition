@@ -70,7 +70,7 @@ public class KnightAnimationManager {
             "animation/Projectile/Blast_004.png", "animation/Projectile/Blast_005.png",
             "animation/Projectile/Blast_006.png", "animation/Projectile/Blast_007.png"
         };
-        blastEffectAnimation = createAnimationFromSeparateFiles(blastFiles, 0.77f);
+        blastEffectAnimation = createAnimationFromSeparateFiles(blastFiles, 0.05f);
 
         wallSlideAnimation = createSpriteSheetAnimation("animation/Wall Slide.png", 4, 1, 0.1f);
         wallJumpAnimation = createSpriteSheetAnimation("animation/Walljump.png", 9, 1, 0.1f);
@@ -128,8 +128,13 @@ public class KnightAnimationManager {
             loop = false;
         }
         else if (model.isCasting()) {
-            currentAnim = focusAnimation;
-            animationTime = 0.4f - model.getCastTimer();
+            if (model.isCastingUp()) {
+                currentAnim = lookUpAnimation;
+                animationTime = 0.65f - model.getCastTimer();
+            } else {
+                currentAnim = focusAnimation;
+                animationTime = 0.4f - model.getCastTimer();
+            }
             loop = false;
         }
         else if (model.isDashing()) {
@@ -171,6 +176,8 @@ public class KnightAnimationManager {
                 loop = false;
             } else if (model.isLookingDown()) {
                 currentAnim = lookDownAnimation;
+                loop = false;
+
             } else if (model.isLanding()) {
                 currentAnim = landingAnimation;
                 loop = false;
