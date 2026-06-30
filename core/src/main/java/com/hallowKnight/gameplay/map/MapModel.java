@@ -21,10 +21,13 @@ public class MapModel {
     private Rectangle gateBounds;
 
     private Vector2 knightSpawn;
+    private Vector2 zoteSpawn;
 
     private List<Vector2> crawlidSpawns;
     private List<Vector2> mosquitoSpawns;
     private List<Vector2> huskSpawns;
+
+    private List<Rectangle> cameraZones;
 
     public MapModel(String mapPath) {
         tiledMap = new TmxMapLoader().load(mapPath);
@@ -36,8 +39,9 @@ public class MapModel {
         mosquitoSpawns = new ArrayList<>();
         huskSpawns = new ArrayList<>();
 
-
         knightSpawn = new Vector2(100, 200);
+
+        cameraZones = new ArrayList<>();
 
         int mapWidth = tiledMap.getProperties().get("width", Integer.class);
         int mapHeight = tiledMap.getProperties().get("height", Integer.class);
@@ -72,6 +76,8 @@ public class MapModel {
                     mosquitoSpawns.add(new Vector2(objX, objY));
                 } else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Husk")) {
                     huskSpawns.add(new Vector2(objX, objY));
+                }else if (cleanName != null && cleanName.equalsIgnoreCase("Zote Spawn")) {
+                    zoteSpawn = new Vector2(objX, objY);
                 }
 
                 else if (object instanceof RectangleMapObject) {
@@ -83,6 +89,8 @@ public class MapModel {
                             solidBounds.add(rect);
                         } else if (cleanName.equalsIgnoreCase("Gate")) {
                             gateBounds = rect;
+                        } else if (cleanName != null && cleanName.equalsIgnoreCase("CameraZone")) {
+                            cameraZones.add(rect);
                         } else {
                             solidBounds.add(rect);
                         }
@@ -103,7 +111,9 @@ public class MapModel {
     public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
     public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
     public List<Vector2> getHuskSpawns() { return huskSpawns; }
+    public Vector2 getZoteSpawn() { return zoteSpawn; }
 
+    public List<Rectangle> getCameraZones() { return cameraZones; }
 
     public float getMapPixelWidth() { return mapPixelWidth; }
     public float getMapPixelHeight() { return mapPixelHeight; }

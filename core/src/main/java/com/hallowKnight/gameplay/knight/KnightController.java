@@ -8,6 +8,7 @@ import com.hallowKnight.Constance;
 import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
+import com.hallowKnight.gameplay.npc.ZoteModel;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class KnightController {
         this.game = game;
     }
 
-    public void update(float delta, List<EnemyModel> enemies) {
+    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote) {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -45,7 +46,7 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        handleInput(delta, enemies);
+        handleInput(delta, enemies, zote);
         applyPhysics(delta, mapModel);
 
         if (!model.isDead() && !model.isDashing()) {
@@ -95,7 +96,17 @@ public class KnightController {
         }
     }
 
-    private void handleInput(float delta, List<EnemyModel> enemies) {
+    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote) {
+
+        if (zote != null && zote.isTalking()) {
+            model.setVelocityX(0);
+            if (model.isDashing()) {
+                model.setDashing(false);
+            }
+            model.setAttacking(false);
+            return;
+        }
+
         if (model.isDashing()) {
             model.setDashTimer(model.getDashTimer() - delta);
             model.setVelocityY(0);
@@ -116,7 +127,6 @@ public class KnightController {
             model.setVelocityX(model.isFacingRight() ? dashSpeed : -dashSpeed);
             model.setVelocityY(0);
 
-            // قطع کردن حالت‌های دیگر
             model.setFocusing(false);
             model.setWallSliding(false);
             return;
@@ -164,9 +174,9 @@ public class KnightController {
                     }
                 }
 
+                // برخورد شمشیر
                 for (EnemyModel enemy : enemies) {
                     if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
-
                         enemy.takeDamage(1, model.getX());
                         model.setCurrentSoul(model.getCurrentSoul() + 11);
 
@@ -175,6 +185,10 @@ public class KnightController {
                             model.setCanDoubleJump(true);
                         }
                     }
+                }
+
+                if (zote != null && attackBox.overlaps(zote.getBounds())) {
+                    zote.takeDamage();
                 }
             }
         }
