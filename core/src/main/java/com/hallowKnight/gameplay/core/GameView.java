@@ -56,6 +56,11 @@ public class GameView {
     }
 
     public void render(float delta) {
+        if (model.isMapChanged()) {
+            if (mapView != null) mapView.dispose();
+            mapView = new com.hallowKnight.gameplay.map.MapView(model.getCurrentMap());
+            model.setMapChanged(false);
+        }
 
         float cameraHalfWidth = camera.viewportWidth / 2f;
         float cameraHalfHeight = camera.viewportHeight / 2f;

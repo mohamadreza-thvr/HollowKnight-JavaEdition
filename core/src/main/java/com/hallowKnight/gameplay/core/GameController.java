@@ -1,6 +1,7 @@
 package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.gameplay.knight.KnightController;
 import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.enemy.EnemyController;
@@ -25,6 +26,18 @@ public class GameController {
     }
 
     public void update(float delta) {
+
+        Rectangle knightBounds = model.getKnightModel().getBounds();
+
+        if (model.getCurrentMap().getGateBounds() != null && knightBounds.overlaps(model.getCurrentMap().getGateBounds())) {
+            transitionToMap("maps/crystal map/untitled.tmx");
+            return;
+        }
+        else if (model.getCurrentMap().getBossGateBounds() != null && knightBounds.overlaps(model.getCurrentMap().getBossGateBounds())) {
+            transitionToMap("maps/crossroad map/map.tmx");
+            return;
+        }
+
         enemyController.updateEnemies(model.getEnemies(), delta, model.getCurrentMap(), model.getKnightModel());
 
         if (model.getZote() != null) {
@@ -37,7 +50,6 @@ public class GameController {
 
         for (int i = model.getActiveSpells().size() - 1; i >= 0; i--) {
             VengefulSpiritModel spell = model.getActiveSpells().get(i);
-
             spell.update(delta);
 
             for (EnemyModel enemy : model.getEnemies()) {
@@ -82,5 +94,10 @@ public class GameController {
                 model.getActiveWraiths().remove(i);
             }
         }
+    }
+
+    private void transitionToMap(String newMapPath) {
+        model.loadMap(newMapPath);
+        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
     }
 }

@@ -19,13 +19,16 @@ public class MapModel {
     private List<Rectangle> solidBounds;
     private List<Rectangle> deadlyBounds;
     private Rectangle gateBounds;
+    private Rectangle bossGateBounds;
 
     private Vector2 knightSpawn;
     private Vector2 zoteSpawn;
+    private Vector2 hunterSpawn;
 
     private List<Vector2> crawlidSpawns;
     private List<Vector2> mosquitoSpawns;
     private List<Vector2> huskSpawns;
+    private List<Vector2> crawlerSpawns;
 
     private List<Rectangle> cameraZones;
 
@@ -34,14 +37,14 @@ public class MapModel {
 
         solidBounds = new ArrayList<>();
         deadlyBounds = new ArrayList<>();
+        cameraZones = new ArrayList<>();
 
         crawlidSpawns = new ArrayList<>();
         mosquitoSpawns = new ArrayList<>();
         huskSpawns = new ArrayList<>();
+        crawlerSpawns = new ArrayList<>();
 
         knightSpawn = new Vector2(100, 200);
-
-        cameraZones = new ArrayList<>();
 
         int mapWidth = tiledMap.getProperties().get("width", Integer.class);
         int mapHeight = tiledMap.getProperties().get("height", Integer.class);
@@ -65,21 +68,27 @@ public class MapModel {
                 Float objX = object.getProperties().get("x", Float.class);
                 Float objY = object.getProperties().get("y", Float.class);
 
-
                 if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Knight")) {
                     knightSpawn.set(objX, objY);
                 }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawlid")) {
                     crawlidSpawns.add(new Vector2(objX, objY));
                 }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Crawler")) {
+                    crawlerSpawns.add(new Vector2(objX, objY));
+                }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Mosquito")) {
                     mosquitoSpawns.add(new Vector2(objX, objY));
-                } else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Husk")) {
+                }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Husk")) {
                     huskSpawns.add(new Vector2(objX, objY));
-                }else if (cleanName != null && cleanName.equalsIgnoreCase("Zote Spawn")) {
+                }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Zote Spawn")) {
                     zoteSpawn = new Vector2(objX, objY);
                 }
-
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Hunter")) {
+                    hunterSpawn = new Vector2(objX, objY);
+                }
                 else if (object instanceof RectangleMapObject) {
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -89,7 +98,9 @@ public class MapModel {
                             solidBounds.add(rect);
                         } else if (cleanName.equalsIgnoreCase("Gate")) {
                             gateBounds = rect;
-                        } else if (cleanName != null && cleanName.equalsIgnoreCase("CameraZone")) {
+                        } else if (cleanName.equalsIgnoreCase("Boss Gate")) {
+                            bossGateBounds = rect;
+                        } else if (cleanName.equalsIgnoreCase("CameraZone")) {
                             cameraZones.add(rect);
                         } else {
                             solidBounds.add(rect);
@@ -106,9 +117,12 @@ public class MapModel {
     public List<Rectangle> getSolidBounds() { return solidBounds; }
     public List<Rectangle> getDeadlyBounds() { return deadlyBounds; }
     public Rectangle getGateBounds() { return gateBounds; }
+    public Rectangle getBossGateBounds() { return bossGateBounds; }
     public Vector2 getKnightSpawn() { return knightSpawn; }
+    public Vector2 getHunterSpawn() { return hunterSpawn; }
 
     public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
+    public List<Vector2> getCrawlerSpawns() { return crawlerSpawns; }
     public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
     public List<Vector2> getHuskSpawns() { return huskSpawns; }
     public Vector2 getZoteSpawn() { return zoteSpawn; }
