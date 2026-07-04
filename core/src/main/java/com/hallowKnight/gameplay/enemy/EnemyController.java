@@ -11,21 +11,19 @@ import java.util.List;
 public class EnemyController {
 
     public void updateEnemies(List<EnemyModel> enemies, float delta, MapModel mapModel, KnightModel knight) {
-        if (delta > 0.05f) {
-            delta = 0.05f;
-        }
-        for (EnemyModel enemy : enemies) {
+        if (delta > 0.05f) delta = 0.05f;
 
+        for (EnemyModel enemy : enemies) {
             if (enemy.isKnockedBack()) {
                 enemy.setKnockbackTimer(enemy.getKnockbackTimer() - delta);
-                if (enemy.getKnockbackTimer() <= 0) {
-                    enemy.setKnockedBack(false);
-                }
+                if (enemy.getKnockbackTimer() <= 0) enemy.setKnockedBack(false);
             }
 
             if (!enemy.isDead() && !enemy.isKnockedBack()) {
                 if (enemy instanceof CrawlidModel) {
                     updateCrawlid((CrawlidModel) enemy, delta, mapModel);
+                } else if (enemy instanceof CrystalCrawlerModel) {
+                    updateCrystalCrawler((CrystalCrawlerModel) enemy, delta, mapModel);
                 } else if (enemy instanceof MosquitoModel) {
                     updateMosquito((MosquitoModel) enemy, delta, knight);
                 } else if (enemy instanceof HuskModel) {
@@ -35,6 +33,59 @@ public class EnemyController {
 
             applyPhysics(enemy, delta, mapModel);
         }
+    }
+
+    private void updateCrystalCrawler(CrystalCrawlerModel crawler, float delta, MapModel mapModel) {
+        if (crawler.getPlatform() == null) {
+            Rectangle searchBox = new Rectangle(crawler.getX() - 10, crawler.getY() - 10, crawler.getBounds().width + 20, crawler.getBounds().height + 20);
+            for (Rectangle solid : mapModel.getSolidBounds()) {
+                if (solid.overlaps(searchBox)) {
+                    crawler.setPlatform(solid);
+                    crawler.setEdge(0);
+                    break;
+                }
+            }
+            if (crawler.getPlatform() == null) return;
+        }
+
+        Rectangle p = crawler.getPlatform();
+
+        float speed = 100f * delta;
+
+        if (crawler.getEdge() == 0) {
+            crawler.setX(crawler.getX() + speed);
+            crawler.setY(p.y + p.height);
+            crawler.setRotation(0f);
+            if (crawler.getX() > p.x + p.width - crawler.getBounds().width / 2) {
+                crawler.setEdge(1); crawler.setX(p.x + p.width);
+            }
+        }
+        else if (crawler.getEdge() == 1) {
+            crawler.setX(p.x + p.width);
+            crawler.setY(crawler.getY() - speed);
+            crawler.setRotation(-90f);
+            if (crawler.getY() < p.y - crawler.getBounds().height / 2) {
+                crawler.setEdge(2); crawler.setY(p.y - crawler.getBounds().height);
+            }
+        }
+        else if (crawler.getEdge() == 2) {
+            crawler.setX(crawler.getX() - speed);
+            crawler.setY(p.y - crawler.getBounds().height);
+            crawler.setRotation(-180f);
+            if (crawler.getX() < p.x - crawler.getBounds().width / 2) {
+                crawler.setEdge(3); crawler.setX(p.x - crawler.getBounds().width);
+            }
+        }
+        else if (crawler.getEdge() == 3) {
+            crawler.setX(p.x - crawler.getBounds().width);
+            crawler.setY(crawler.getY() + speed);
+            crawler.setRotation(90f);
+            if (crawler.getY() > p.y + p.height - crawler.getBounds().height / 2) {
+                crawler.setEdge(0); crawler.setY(p.y + p.height);
+            }
+        }
+
+        crawler.updateBounds();
     }
 
     private void updateCrawlid(CrawlidModel crawlid, float delta, MapModel mapModel) {
@@ -54,9 +105,7 @@ public class EnemyController {
         crawlid.setVelocityX(crawlid.isFacingRight() ? speed : -speed);
 
         if (crawlid.isGrounded()) {
-            float checkX = crawlid.isFacingRight()
-                ? crawlid.getX() + crawlid.getBounds().width + 5f
-                : crawlid.getX() - 10f;
+            float checkX = crawlid.isFacingRight() ? crawlid.getX() + crawlid.getBounds().width + 5f : crawlid.getX() - 10f;
             Rectangle edgeChecker = new Rectangle(checkX, crawlid.getY() - 15f, 5f, 15f);
 
             boolean isGroundAhead = false;
@@ -81,7 +130,7 @@ public class EnemyController {
         }
 
         if (mosquito.getCurrentState() == EnemyState.IDLE) {
-            mosquito.setStateTimer(mosquito.getStateTimer() + delta); // تایمر کوول‌داون حمله
+            mosquito.setStateTimer(mosquito.getStateTimer() + delta);
             mosquito.setVelocityX(0f);
             mosquito.setVelocityY(0f);
             mosquito.setFacingRight(knight.getX() > mosquito.getX());
@@ -122,7 +171,6 @@ public class EnemyController {
     }
 
     private void updateHusk(HuskModel husk, float delta, MapModel mapModel, KnightModel knight) {
-
         float visionWidth = 350f;
         if (husk.isFacingRight()) {
             husk.getVisionBounds().set(husk.getX() + husk.getBounds().width, husk.getY(), visionWidth, husk.getBounds().height);
@@ -212,8 +260,12 @@ public class EnemyController {
     }
 
     private void applyPhysics(EnemyModel enemy, float delta, MapModel mapModel) {
-        enemy.setGrounded(false);
 
+        if (enemy instanceof CrystalCrawlerModel && !enemy.isDead() && !enemy.isKnockedBack()) {
+            return;
+        }
+
+        enemy.setGrounded(false);
         enemy.setX(enemy.getX() + (enemy.getVelocityX() * delta));
         enemy.updateBounds();
 
@@ -247,7 +299,6 @@ public class EnemyController {
             }
             else if (enemy instanceof HuskModel) {
                 HuskModel husk = (HuskModel) enemy;
-
                 if (husk.getCurrentState() == EnemyState.WALK) {
                     husk.setCurrentState(EnemyState.TURN);
                     husk.setStateTimer(0f);
@@ -281,12 +332,7 @@ public class EnemyController {
                 }
                 else if (enemy.getVelocityY() > 0) {
                     enemy.setY(solid.y - enemy.getBounds().height);
-
-                    if (enemy instanceof MosquitoModel) {
-                        enemy.setVelocityY(0);
-                    } else {
-                        enemy.setVelocityY(0);
-                    }
+                    enemy.setVelocityY(0);
                 }
                 enemy.updateBounds();
             }

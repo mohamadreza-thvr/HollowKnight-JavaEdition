@@ -63,6 +63,10 @@ public class GameModel {
             enemies.add(new HuskModel(pos.x, pos.y));
         }
 
+        for (Vector2 pos : currentMap.getCrawlerSpawns()) {
+            enemies.add(new CrystalCrawlerModel(pos.x, pos.y));
+        }
+
         if (currentMap.getZoteSpawn() != null) {
             zote = new ZoteModel(currentMap.getZoteSpawn().x, currentMap.getZoteSpawn().y);
         } else {

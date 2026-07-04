@@ -24,16 +24,14 @@
             return instance;
         }
 
-        // متد کمکی برای ساخت دکمه
+
         public TextButton createButton(String text) {
-            // ۱. گرفتن استایل پیش‌فرض از اسکین
             TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(skin.get(TextButton.TextButtonStyle.class));
 
-            style.up = null;   // حالت عادی
-            style.down = null; // حالتی که کلیک شده
-            style.over = null; // حالتی که موس روی آن است (Hover)
+            style.up = null;
+            style.down = null;
+            style.over = null;
 
-            // ساخت دکمه با استایل جدید
             TextButton button = new TextButton(text, style);
 
             button.setWidth(300);
@@ -43,14 +41,12 @@
             return button;
         }
 
-        // متد کمکی برای ساخت لیبل (متن)
         public Label createLabel(String text) {
             return new Label(text, skin);
         }
 
-        // متد برای تغییر زبان (آینده‌نگری برای تسک Localization)
         public void changeLanguageSkin(String newSkinPath) {
-            skin.dispose(); // پاک کردن اسکین قبلی
+            skin.dispose();
             skin = new Skin(Gdx.files.internal(newSkinPath));
         }
 
@@ -58,7 +54,6 @@
             return skin;
         }
 
-        // برای جلوگیری از نشت حافظه هنگام خروج از بازی
         public void dispose() {
             if (skin != null) {
                 skin.dispose();
