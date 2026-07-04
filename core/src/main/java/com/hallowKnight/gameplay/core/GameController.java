@@ -2,6 +2,7 @@ package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Game;
 import com.hallowKnight.gameplay.knight.KnightController;
+import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.enemy.EnemyController;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteController;
@@ -32,6 +33,8 @@ public class GameController {
 
         knightController.update(delta, model.getEnemies(), model.getZote(), model.getActiveSpells(), model.getActiveWraiths());
 
+        boolean hasVoidHeart = model.getKnightModel().isCharmEquipped(KnightModel.Charm.VOID_HEART);
+
         for (int i = model.getActiveSpells().size() - 1; i >= 0; i--) {
             VengefulSpiritModel spell = model.getActiveSpells().get(i);
 
@@ -39,7 +42,8 @@ public class GameController {
 
             for (EnemyModel enemy : model.getEnemies()) {
                 if (!enemy.isDead() && spell.getBounds().overlaps(enemy.getBounds()) && !spell.hasHit(enemy)) {
-                    enemy.takeDamage(2, spell.getX());
+                    int spellDamage = hasVoidHeart ? 3 : 2;
+                    enemy.takeDamage(spellDamage, spell.getX(), false);
                     spell.addHitEnemy(enemy);
                 }
             }
@@ -59,7 +63,12 @@ public class GameController {
 
             for (EnemyModel enemy : model.getEnemies()) {
                 if (!enemy.isDead() && wraith.getBounds().overlaps(enemy.getBounds()) && !wraith.hasHit(enemy)) {
-                    enemy.takeDamage(1, wraith.getX() + (wraith.getBounds().width / 2f));
+
+                    int baseDamage = 1;
+                    float finalDamage = hasVoidHeart ? baseDamage * 1.5f : baseDamage;
+                    int calculatedDamage = Math.max(1, Math.round(finalDamage));
+
+                    enemy.takeDamage(calculatedDamage, wraith.getX() + (wraith.getBounds().width / 2f), false);
                     wraith.addHitEnemy(enemy);
                 }
             }
@@ -74,5 +83,4 @@ public class GameController {
             }
         }
     }
-
 }

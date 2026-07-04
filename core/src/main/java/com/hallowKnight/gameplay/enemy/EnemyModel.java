@@ -29,10 +29,13 @@ public abstract class EnemyModel {
         bounds.setPosition(x, y);
     }
 
-    public void takeDamage(int amount, float sourceX) {
+    public void takeDamage(int amount, float sourceX, boolean isHeavyBlow) {
         if (isDead) return;
 
         health -= amount;
+
+        float horizontalKnockback = isHeavyBlow ? 650f : 400f;
+
         if (health <= 0) {
             health = 0;
             isDead = true;
@@ -44,10 +47,10 @@ public abstract class EnemyModel {
         }
 
         if (x > sourceX) {
-            velocityX = 400f;
+            velocityX = horizontalKnockback;
             facingRight = false;
         } else {
-            velocityX = -400f;
+            velocityX = -horizontalKnockback;
             facingRight = true;
         }
     }

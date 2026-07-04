@@ -69,6 +69,7 @@ public class KnightView {
             }
 
             int dashSide;
+            if(model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) dashSide = model.isFacingRight() ? 1 : -1;
             dashSide = model.isFacingRight() ? 1 : -1;
 
             batch.draw(dashEffectFrame,

@@ -138,7 +138,10 @@ public class KnightAnimationManager {
             loop = false;
         }
         else if (model.isDashing()) {
-            currentAnim = dashAnimation;
+            if(model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)){
+                currentAnim = dashAnimation;
+            }
+            else currentAnim = dashAnimation;
         }
         else if (model.isAttacking()) {
             if (model.getAttackDirection() == 1) {

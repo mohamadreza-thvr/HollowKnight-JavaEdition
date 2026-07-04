@@ -51,7 +51,7 @@ public class GameView {
 
         this.knightView = new KnightView(model.getKnightModel());
         this.enemyView = new EnemyView();
-        this.spellView = new VengefulSpiritView();
+        this.spellView = new VengefulSpiritView(model.getKnightModel());
         this.wraithsView = new HowlingWraithsView();
     }
 

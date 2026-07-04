@@ -5,15 +5,20 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hallowKnight.gameplay.knight.KnightModel;
 
 import java.util.List;
 
 public class VengefulSpiritView {
     private Animation<TextureRegion> soulBallAnimation;
+    private Animation<TextureRegion> shadowBallAnimation;
+
     private Texture sheet;
 
-    public VengefulSpiritView() {
-        sheet = new Texture(Gdx.files.internal("animation/Projectile/SoulBall.png"));
+    public VengefulSpiritView(KnightModel model) {
+        if(model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) sheet = new Texture(Gdx.files.internal("animation/Projectile/SoulBall.png"));
+        else sheet = new Texture(Gdx.files.internal("animation/Projectile/ShadowBall.png"));
+
 
         int frameWidth = sheet.getWidth() / 4;
         TextureRegion[][] tmp = TextureRegion.split(sheet, frameWidth, sheet.getHeight());

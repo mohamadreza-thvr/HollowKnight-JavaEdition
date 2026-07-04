@@ -55,7 +55,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        inventoryView = new InventoryView();
+        inventoryView = new InventoryView(model.getKnightModel());
     }
 
     @Override
@@ -86,6 +86,7 @@ public class GameScreen implements Screen {
 
         } else if (currentState == GameState.INVENTORY) {
             view.render(0);
+            Gdx.input.setInputProcessor(inventoryView.getStage());
             inventoryView.render(delta);
         }
     }

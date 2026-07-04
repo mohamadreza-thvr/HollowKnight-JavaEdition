@@ -29,6 +29,7 @@ public class KnightController {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
+
         if (model.isDead()) {
             model.setDeathTimer(model.getDeathTimer() + delta);
             model.setVelocityX(0);
@@ -39,9 +40,17 @@ public class KnightController {
             }
             return;
         }
+
+        if (model.getDashCooldownTimer() > 0) {
+            model.setDashCooldownTimer(model.getDashCooldownTimer() - delta);
+        }
+
         if (model.isAttacking()) {
             model.setAttackTimer(model.getAttackTimer() + delta);
-            if (model.getAttackTimer() >= 0.4f) {
+
+            float attackLimit = model.isCharmEquipped(KnightModel.Charm.QUICK_SLASH) ? 0.25f : 0.4f;
+
+            if (model.getAttackTimer() >= attackLimit) {
                 model.setAttacking(false);
             }
         }
@@ -61,7 +70,9 @@ public class KnightController {
 
         if (model.isGrounded() || model.isWallSliding()) {
             model.setCanDoubleJump(true);
-            model.setCanDash(true);
+            if (model.getDashCooldownTimer() <= 0) {
+                model.setCanDash(true);
+            }
             model.setDoubleJumping(false);
         }
 
@@ -126,6 +137,17 @@ public class KnightController {
             if (model.getDashTimer() <= 0) {
                 model.setDashing(false);
                 model.setVelocityX(0);
+
+                float cooldown = model.isCharmEquipped(KnightModel.Charm.DASHMASTER) ? 0.5f : 1f;
+                model.setDashCooldownTimer(cooldown);
+            }
+
+            if (model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) {
+                for (EnemyModel enemy : enemies) {
+                    if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
+                        enemy.takeDamage(1, model.getX(), false);
+                    }
+                }
             }
             return;
         }
@@ -148,12 +170,16 @@ public class KnightController {
             return;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C) && model.isCanDash()) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C) && model.isCanDash() && model.getDashCooldownTimer() <= 0) {
             model.setDashing(true);
             model.setCanDash(false);
             model.setDashTimer(0.3f);
 
             float dashSpeed = Constance.KNIGHT_SPEED * 2.5f;
+            if (model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) {
+                dashSpeed *= 1.2f;
+            }
+
             model.setVelocityX(model.isFacingRight() ? dashSpeed : -dashSpeed);
             model.setVelocityY(0);
 
@@ -203,10 +229,15 @@ public class KnightController {
                     }
                 }
 
+                int baseDamage = model.isCharmEquipped(KnightModel.Charm.UNBREAKABLE_STRENGTH) ? 2 : 1;
+                float soulGain = model.isCharmEquipped(KnightModel.Charm.SOUL_CATCHER) ? 17f : 11f;
+                boolean isHeavy = model.isCharmEquipped(KnightModel.Charm.HEAVY_BLOW);
+
                 for (EnemyModel enemy : enemies) {
                     if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
-                        enemy.takeDamage(1, model.getX());
-                        model.setCurrentSoul(model.getCurrentSoul() + 11);
+
+                        enemy.takeDamage(baseDamage, model.getX(), isHeavy);
+                        model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
                         if (model.getAttackDirection() == -1) {
                             model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
@@ -271,9 +302,12 @@ public class KnightController {
         if (Gdx.input.isKeyPressed(Input.Keys.A) && model.isGrounded()) {
             model.setVelocityX(0);
             model.setFocusing(true);
-            if (model.getCurrentHealth() < 5 && model.getCurrentSoul() >= 20) {
+            if (model.getCurrentHealth() < model.getMaxHealth() && model.getCurrentSoul() >= 20) {
                 model.setFocusTimer(model.getFocusTimer() + delta);
-                if (model.getFocusTimer() >= 1.0f) {
+
+                float healLimit = model.isCharmEquipped(KnightModel.Charm.QUICK_FOCUS) ? 0.6f : 1.0f;
+
+                if (model.getFocusTimer() >= healLimit) {
                     model.setCurrentSoul(model.getCurrentSoul() - 20);
                     model.heal(1);
                     model.setFocusTimer(0f);

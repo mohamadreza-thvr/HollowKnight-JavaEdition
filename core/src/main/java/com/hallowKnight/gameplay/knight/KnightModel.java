@@ -2,8 +2,24 @@ package com.hallowKnight.gameplay.knight;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.Constance;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KnightModel {
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public enum Charm {
+        SOUL_CATCHER, DASHMASTER, UNBREAKABLE_STRENGTH,
+        QUICK_SLASH, QUICK_FOCUS, HEAVY_BLOW,
+        SHARP_SHADOW, VOID_HEART
+    }
 
     private int maxHealth = 5;
     private int currentHealth = 5;
@@ -43,18 +59,22 @@ public class KnightModel {
     private boolean isDashing = false;
     private float dashTimer = 0f;
     private boolean canDash = true;
+    private float dashCooldownTimer = 0f;
 
     private boolean isDead = false;
     private float deathTimer = 0f;
 
     private boolean isAttacking = false;
     private float attackTimer = 0f;
-    private int attackDirection = 0; // 0 = جلو، 1 = بالا، -1 = پایین
+    private int attackDirection = 0;
     private boolean isAltSlash = false;
 
     private boolean isCasting = false;
     private boolean castingUp = false;
     private float castTimer = 0f;
+
+    private List<Charm> equippedCharms = new ArrayList<>();
+    private int maxNotches = 3;
 
     public KnightModel(float startX, float startY) {
         this.x = startX;
@@ -63,6 +83,29 @@ public class KnightModel {
     }
 
     public void updateBounds() { bounds.setPosition(x, y); }
+
+    public boolean isCharmEquipped(Charm charm) {
+        return equippedCharms.contains(charm);
+    }
+
+    public boolean equipCharm(Charm charm) {
+        if (equippedCharms.size() < maxNotches && !equippedCharms.contains(charm)) {
+            equippedCharms.add(charm);
+            return true;
+        }
+        return false;
+    }
+
+    public void unequipCharm(Charm charm) {
+        equippedCharms.remove(charm);
+    }
+
+    public List<Charm> getEquippedCharms() {
+        return equippedCharms;
+    }
+
+    public float getDashCooldownTimer() { return dashCooldownTimer; }
+    public void setDashCooldownTimer(float dashCooldownTimer) { this.dashCooldownTimer = dashCooldownTimer; }
 
     public float getX() { return x; }
     public void setX(float x) { this.x = x; updateBounds(); }
@@ -117,18 +160,18 @@ public class KnightModel {
     public void setWallJumpTimer(float wallJumpTimer) { this.wallJumpTimer = wallJumpTimer; }
 
     public boolean isDashing() { return isDashing; }
-    public void setDashing(boolean dashing) { isDashing = dashing; }
+    public void setDashing(boolean dashing) { this.isDashing = dashing; }
     public float getDashTimer() { return dashTimer; }
     public void setDashTimer(float dashTimer) { this.dashTimer = dashTimer; }
     public boolean isCanDash() { return canDash; }
     public void setCanDash(boolean canDash) { this.canDash = canDash; }
     public boolean isDead() { return isDead; }
-    public void setDead(boolean dead) { isDead = dead; }
+    public void setDead(boolean dead) { this.isDead = dead; }
     public float getDeathTimer() { return deathTimer; }
     public void setDeathTimer(float deathTimer) { this.deathTimer = deathTimer; }
 
     public boolean isAttacking() { return isAttacking; }
-    public void setAttacking(boolean attacking) { isAttacking = attacking; }
+    public void setAttacking(boolean attacking) { this.isAttacking = attacking; }
 
     public float getAttackTimer() { return attackTimer; }
     public void setAttackTimer(float attackTimer) { this.attackTimer = attackTimer; }
