@@ -34,7 +34,13 @@ public class EnemyView {
                 visualWidth = 70; visualHeight = 90;
                 rotation = ((CrystalCrawlerModel) enemy).getRotation();
             } else if (enemy instanceof CrystalHunterModel) {
-                visualWidth = 120; visualHeight = 120;
+                visualHeight = 120;
+                float aspectRatio = (float) frame.getRegionWidth() / frame.getRegionHeight();
+                visualWidth = visualHeight * aspectRatio;
+                offsetY = (visualHeight - enemy.getBounds().height) / 2f;
+            }
+            else if (enemy instanceof CrystalGuardianModel) {
+                visualWidth = 130; visualHeight = 150;
                 offsetY = (visualHeight - enemy.getBounds().height) / 2f;
             }
 
@@ -46,6 +52,27 @@ public class EnemyView {
                 visualWidth, visualHeight,
                 1f, 1f,
                 rotation);
+
+            if (enemy instanceof CrystalGuardianModel) {
+                CrystalGuardianModel guardian = (CrystalGuardianModel) enemy;
+                if (guardian.getCurrentState() == EnemyState.ANTICIPATE) {
+                    TextureRegion laserFrame = animationManager.getGuardianLaserFrame(guardian.getStateTimer());
+
+                    float laserLen = 800f;
+                    float laserThickness = 80f;
+                    float laserX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width - 20f : guardian.getX() - laserLen + 20f;
+                    float laserY = guardian.getY() + 50f;
+
+                    boolean isFlipped = laserFrame.isFlipX();
+                    if (guardian.isFacingRight() && isFlipped) {
+                        laserFrame.flip(true, false);
+                    } else if (!guardian.isFacingRight() && !isFlipped) {
+                        laserFrame.flip(true, false);
+                    }
+
+                    batch.draw(laserFrame, laserX, laserY, laserLen, laserThickness);
+                }
+            }
         }
 
         for (CrystalProjectileModel proj : projectiles) {

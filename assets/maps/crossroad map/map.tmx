@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="1000" height="500" tilewidth="8" tileheight="8" infinite="0" nextlayerid="16" nextobjectid="229">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="1000" height="500" tilewidth="8" tileheight="8" infinite="0" nextlayerid="16" nextobjectid="230">
  <tileset firstgid="1" source="floor1.tsx"/>
  <tileset firstgid="417" source="rock2.tsx"/>
  <tileset firstgid="1037" source="objects.tsx"/>
@@ -4147,8 +4147,9 @@
   <object id="228" name="Spawn Mosquito" x="5927.27" y="2118.18">
    <point/>
   </object>
+  <object id="229" name="Gate" x="426" y="1202" width="104" height="224"/>
  </objectgroup>
- <objectgroup id="14" name="Camera Bounds">
+ <objectgroup id="14" name="Camera Bounds" visible="0">
   <object id="180" name="CameraZone" x="0" y="9.09091" width="4798.91" height="1522.48"/>
   <object id="181" name="CameraZone" x="4802" y="422" width="3188" height="672"/>
   <object id="183" name="CameraZone" x="4796" y="4" width="1148" height="386"/>

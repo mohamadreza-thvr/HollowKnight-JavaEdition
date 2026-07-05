@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="1000" height="500" tilewidth="8" tileheight="8" infinite="0" nextlayerid="14" nextobjectid="76">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="1000" height="500" tilewidth="8" tileheight="8" infinite="0" nextlayerid="14" nextobjectid="78">
  <tileset firstgid="1" source="start3.tsx"/>
  <tileset firstgid="589" source="atlas0 #26003.tsx"/>
  <tileset firstgid="16973" source="floor2.tsx"/>
@@ -4094,16 +4094,16 @@
   <object id="62" name="Crawler" x="1998.67" y="1286">
    <point/>
   </object>
-  <object id="63" name="Crawler" x="2141.33" y="1577.39">
+  <object id="63" name="Crawler" x="2159.33" y="1567.39">
    <point/>
   </object>
-  <object id="64" name="Crawler" x="1859.94" y="1569.33">
+  <object id="64" name="Crawler" x="1826.61" y="1561.33">
    <point/>
   </object>
   <object id="65" name="Crawler" x="1985.33" y="1881.34">
    <point/>
   </object>
-  <object id="66" name="Crawler" x="1288" y="1293.33">
+  <object id="66" name="Crawler" x="1288" y="1285.33">
    <point/>
   </object>
   <object id="68" name=" Spawn Knight" x="315.152" y="536.364">
@@ -4116,10 +4116,13 @@
   <object id="73" name="Crawler" x="1406.3" y="1557.45">
    <point/>
   </object>
-  <object id="74" name="Crawler" x="1282.67" y="1869.94">
+  <object id="74" name="Crawler" x="1280" y="1875.27">
    <point/>
   </object>
   <object id="75" name="Crawler" x="1154.18" y="1571.03">
+   <point/>
+  </object>
+  <object id="76" name="Spawn Guardian" x="2015.15" y="833.333">
    <point/>
   </object>
  </objectgroup>

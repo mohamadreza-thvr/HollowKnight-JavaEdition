@@ -26,6 +26,8 @@ public class EnemyController {
                     updateCrystalCrawler((CrystalCrawlerModel) enemy, delta, mapModel);
                 } else if (enemy instanceof CrystalHunterModel) {
                     updateCrystalHunter((CrystalHunterModel) enemy, projectiles, delta, knight);
+                } else if (enemy instanceof CrystalGuardianModel) {
+                    updateCrystalGuardian((CrystalGuardianModel) enemy, delta, mapModel, knight);
                 } else if (enemy instanceof MosquitoModel) {
                     updateMosquito((MosquitoModel) enemy, delta, knight);
                 } else if (enemy instanceof HuskModel) {
@@ -51,6 +53,69 @@ public class EnemyController {
                     projectiles.remove(i);
                     break;
                 }
+            }
+        }
+    }
+
+    private void updateCrystalGuardian(CrystalGuardianModel guardian, float delta, MapModel mapModel, KnightModel knight) {
+        float visionRange = 800f;
+        if (guardian.isFacingRight()) {
+            guardian.getVisionBounds().set(guardian.getX() + guardian.getBounds().width, guardian.getY(), visionRange, guardian.getBounds().height);
+        } else {
+            guardian.getVisionBounds().set(guardian.getX() - visionRange, guardian.getY(), visionRange, guardian.getBounds().height);
+        }
+
+        if (guardian.getCurrentState() == EnemyState.IDLE) {
+            guardian.setVelocityX(0);
+            guardian.setStateTimer(guardian.getStateTimer() + delta);
+
+            if (guardian.getVisionBounds().overlaps(knight.getBounds())) {
+                guardian.setCurrentState(EnemyState.ANTICIPATE);
+                guardian.setStateTimer(0f);
+                guardian.setLaserFiredThisTurn(false);
+            }
+        }
+        else if (guardian.getCurrentState() == EnemyState.ANTICIPATE) {
+            guardian.setVelocityX(0);
+            guardian.setStateTimer(guardian.getStateTimer() + delta);
+
+            if (guardian.getStateTimer() >= 0.35f && !guardian.isLaserFiredThisTurn()) {
+                guardian.setLaserFiredThisTurn(true);
+
+                float laserX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width : guardian.getX() - visionRange;
+                guardian.getLaserBounds().set(laserX, guardian.getY() + 30f, visionRange, 50f);
+
+                if (guardian.getLaserBounds().overlaps(knight.getBounds())) {
+                    knight.takeDamage(1);
+                }
+            }
+
+            if (guardian.getStateTimer() >= 0.75f) {
+                guardian.setCurrentState(EnemyState.DASH);
+                guardian.setEnrageTimer(3.5f);
+                guardian.setStateTimer(0f);
+            }
+        }
+        else if (guardian.getCurrentState() == EnemyState.DASH) { // فاز خشم (Enraged)
+            guardian.setEnrageTimer(guardian.getEnrageTimer() - delta);
+            guardian.setStateTimer(guardian.getStateTimer() + delta);
+
+            float speed = 250f;
+            guardian.setVelocityX(guardian.isFacingRight() ? speed : -speed);
+
+            if (guardian.getEnrageTimer() <= 0) {
+                guardian.setCurrentState(EnemyState.IDLE);
+                guardian.setVelocityX(0);
+                guardian.setStateTimer(0f);
+            }
+        }
+        else if (guardian.getCurrentState() == EnemyState.TURN) {
+            guardian.setVelocityX(0);
+            guardian.setStateTimer(guardian.getStateTimer() + delta);
+            if (guardian.getStateTimer() > 0.3f) {
+                guardian.setFacingRight(!guardian.isFacingRight());
+                guardian.setCurrentState(EnemyState.DASH);
+                guardian.setStateTimer(0f);
             }
         }
     }
@@ -338,7 +403,7 @@ public class EnemyController {
             if (enemy.getBounds().overlaps(solid)) {
 
                 boolean isActualWall = true;
-                if (enemy instanceof CrawlidModel || enemy instanceof HuskModel) {
+                if (enemy instanceof CrawlidModel || enemy instanceof HuskModel || enemy instanceof CrystalGuardianModel) {
                     isActualWall = (solid.y + solid.height > enemy.getY() + 5f);
                 }
 
@@ -373,9 +438,16 @@ public class EnemyController {
                     husk.setStateTimer(0f);
                 }
             }
+            else if (enemy instanceof CrystalGuardianModel) {
+                CrystalGuardianModel guardian = (CrystalGuardianModel) enemy;
+                if (guardian.getCurrentState() == EnemyState.DASH) {
+                    guardian.setCurrentState(EnemyState.TURN);
+                    guardian.setStateTimer(0f);
+                }
+            }
         }
 
-        if (enemy instanceof CrawlidModel || enemy instanceof HuskModel || enemy.isDead() || enemy.isKnockedBack()) {
+        if (enemy instanceof CrawlidModel || enemy instanceof HuskModel || enemy instanceof CrystalGuardianModel || enemy.isDead() || enemy.isKnockedBack()) {
             enemy.setVelocityY(enemy.getVelocityY() - (Constance.GRAVITY * delta));
         }
 

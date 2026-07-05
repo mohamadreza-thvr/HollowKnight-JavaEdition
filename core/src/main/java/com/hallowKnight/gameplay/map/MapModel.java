@@ -28,7 +28,8 @@ public class MapModel {
     private List<Vector2> mosquitoSpawns;
     private List<Vector2> huskSpawns;
     private List<Vector2> crawlerSpawns;
-    private List<Vector2> hunterSpawns; // ⚠️ تبدیل به لیست شد
+    private List<Vector2> hunterSpawns;
+    private List<Vector2> guardianSpawns;
 
     private List<Rectangle> cameraZones;
 
@@ -43,7 +44,8 @@ public class MapModel {
         mosquitoSpawns = new ArrayList<>();
         huskSpawns = new ArrayList<>();
         crawlerSpawns = new ArrayList<>();
-        hunterSpawns = new ArrayList<>(); // ⚠️ مقداردهی اولیه
+        hunterSpawns = new ArrayList<>();
+        guardianSpawns = new ArrayList<>();
 
         knightSpawn = new Vector2(100, 200);
 
@@ -83,11 +85,14 @@ public class MapModel {
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Husk")) {
                     huskSpawns.add(new Vector2(objX, objY));
                 }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Hunter")) {
+                    hunterSpawns.add(new Vector2(objX, objY));
+                }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Guardian")) {
+                    guardianSpawns.add(new Vector2(objX, objY));
+                }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Zote Spawn")) {
                     zoteSpawn = new Vector2(objX, objY);
-                }
-                else if (cleanName != null && cleanName.equalsIgnoreCase("Hunter")) {
-                    hunterSpawns.add(new Vector2(objX, objY)); // ⚠️ اضافه شدن به لیست
                 }
                 else if (object instanceof RectangleMapObject) {
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
@@ -124,7 +129,8 @@ public class MapModel {
     public List<Vector2> getCrawlerSpawns() { return crawlerSpawns; }
     public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
     public List<Vector2> getHuskSpawns() { return huskSpawns; }
-    public List<Vector2> getHunterSpawns() { return hunterSpawns; } // ⚠️ دریافت لیست کامل
+    public List<Vector2> getHunterSpawns() { return hunterSpawns; }
+    public List<Vector2> getGuardianSpawns() { return guardianSpawns; }
 
     public Vector2 getZoteSpawn() { return zoteSpawn; }
     public List<Rectangle> getCameraZones() { return cameraZones; }

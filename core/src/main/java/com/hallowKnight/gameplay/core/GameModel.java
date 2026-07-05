@@ -74,6 +74,10 @@ public class GameModel {
             enemies.add(new CrystalHunterModel(pos.x, pos.y));
         }
 
+        for (Vector2 pos : currentMap.getGuardianSpawns()) {
+            enemies.add(new CrystalGuardianModel(pos.x, pos.y));
+        }
+
         if (currentMap.getZoteSpawn() != null) {
             zote = new ZoteModel(currentMap.getZoteSpawn().x, currentMap.getZoteSpawn().y);
         } else {
