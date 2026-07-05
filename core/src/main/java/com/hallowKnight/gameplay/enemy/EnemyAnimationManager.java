@@ -14,8 +14,9 @@ public class EnemyAnimationManager {
     private Animation<TextureRegion> crawlidWalk, crawlidTurn, crawlidDeathAir, crawlidDeathLand;
     private Animation<TextureRegion> mosquitoIdle, mosquitoTurn, mosquitoAnticipate, mosquitoAttack, mosquitoDeathAir, mosquitoDeathLand;
     private Animation<TextureRegion> huskIdle, huskWalk, huskTurn, huskAnticipate, huskLunge, huskDeath;
-
     private Animation<TextureRegion> crystalWalk, crystalTurn, crystalDeathAir, crystalDeathLand;
+
+    private Animation<TextureRegion> hunterFly, hunterTurn, hunterAttackRecover, hunterDeathAir, hunterDeathLand;
 
     private float stateTime = 0f;
 
@@ -48,6 +49,12 @@ public class EnemyAnimationManager {
         crystalTurn = createSpriteSheet("animation/Crystal_Crawler/Turn.png", 2, 0.35f);
         crystalDeathAir = createSpriteSheet("animation/Crystal_Crawler/Death Air.png", 3, 0.35f);
         crystalDeathLand = createSpriteSheet("animation/Crystal_Crawler/Death Land.png", 2, 0.35f);
+
+        hunterFly = createSpriteSheet("animation/Crystal_Hunter/Fly.png", 4, 0.3f);
+        hunterTurn = createSpriteSheet("animation/Crystal_Hunter/Turn To Fly.png", 3, 0.3f);
+        hunterAttackRecover = createSpriteSheet("animation/Crystal_Hunter/Attack.png", 4, 0.3f);
+        hunterDeathAir = createSpriteSheet("animation/Crystal_Hunter/Death Air.png", 3, 0.3f);
+        hunterDeathLand = createSpriteSheet("animation/Crystal_Hunter/Death Land.png", 1, 0.3f);
     }
 
     private Animation<TextureRegion> createSpriteSheet(String fileName, int columns, float frameDuration) {
@@ -82,6 +89,19 @@ public class EnemyAnimationManager {
             } else if (crawler.getCurrentState() == EnemyState.TURN) {
                 currentAnim = crystalTurn; loop = false;
             } else { currentAnim = crystalWalk; }
+        }
+        else if (enemy instanceof CrystalHunterModel) {
+            CrystalHunterModel hunter = (CrystalHunterModel) enemy;
+            if (hunter.isDead()) {
+                currentAnim = hunter.isHitGroundAfterDeath() ? hunterDeathLand : hunterDeathAir;
+                loop = false;
+            } else if (hunter.getCurrentState() == EnemyState.ANTICIPATE) {
+                currentAnim = hunterFly;
+            } else if (hunter.getCurrentState() == EnemyState.DASH) {
+                currentAnim = hunterAttackRecover; loop = true;
+            } else if (hunter.getCurrentState() == EnemyState.TURN) {
+                currentAnim = hunterTurn; loop = false;
+            } else { currentAnim = hunterFly; }
         }
         else if (enemy instanceof MosquitoModel) {
             MosquitoModel mosquito = (MosquitoModel) enemy;

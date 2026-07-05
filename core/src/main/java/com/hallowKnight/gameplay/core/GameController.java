@@ -38,7 +38,7 @@ public class GameController {
             return;
         }
 
-        enemyController.updateEnemies(model.getEnemies(), delta, model.getCurrentMap(), model.getKnightModel());
+        enemyController.updateEnemies(model.getEnemies(), model.getCrystalProjectiles(), delta, model.getCurrentMap(), model.getKnightModel());
 
         if (model.getZote() != null) {
             zoteController.update(model.getZote(), delta, model.getKnightModel());

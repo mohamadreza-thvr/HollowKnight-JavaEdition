@@ -23,12 +23,12 @@ public class MapModel {
 
     private Vector2 knightSpawn;
     private Vector2 zoteSpawn;
-    private Vector2 hunterSpawn;
 
     private List<Vector2> crawlidSpawns;
     private List<Vector2> mosquitoSpawns;
     private List<Vector2> huskSpawns;
     private List<Vector2> crawlerSpawns;
+    private List<Vector2> hunterSpawns; // ⚠️ تبدیل به لیست شد
 
     private List<Rectangle> cameraZones;
 
@@ -43,6 +43,7 @@ public class MapModel {
         mosquitoSpawns = new ArrayList<>();
         huskSpawns = new ArrayList<>();
         crawlerSpawns = new ArrayList<>();
+        hunterSpawns = new ArrayList<>(); // ⚠️ مقداردهی اولیه
 
         knightSpawn = new Vector2(100, 200);
 
@@ -58,7 +59,6 @@ public class MapModel {
     }
 
     private void parseMapObjects() {
-
         for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
             for (MapObject object : tiledMap.getLayers().get(i).getObjects()) {
 
@@ -74,7 +74,7 @@ public class MapModel {
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawlid")) {
                     crawlidSpawns.add(new Vector2(objX, objY));
                 }
-                else if (cleanName != null && cleanName.equalsIgnoreCase("Crawler")) {
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawler")) {
                     crawlerSpawns.add(new Vector2(objX, objY));
                 }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Mosquito")) {
@@ -87,7 +87,7 @@ public class MapModel {
                     zoteSpawn = new Vector2(objX, objY);
                 }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Hunter")) {
-                    hunterSpawn = new Vector2(objX, objY);
+                    hunterSpawns.add(new Vector2(objX, objY)); // ⚠️ اضافه شدن به لیست
                 }
                 else if (object instanceof RectangleMapObject) {
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
@@ -119,16 +119,15 @@ public class MapModel {
     public Rectangle getGateBounds() { return gateBounds; }
     public Rectangle getBossGateBounds() { return bossGateBounds; }
     public Vector2 getKnightSpawn() { return knightSpawn; }
-    public Vector2 getHunterSpawn() { return hunterSpawn; }
 
     public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
     public List<Vector2> getCrawlerSpawns() { return crawlerSpawns; }
     public List<Vector2> getMosquitoSpawns() { return mosquitoSpawns; }
     public List<Vector2> getHuskSpawns() { return huskSpawns; }
+    public List<Vector2> getHunterSpawns() { return hunterSpawns; } // ⚠️ دریافت لیست کامل
+
     public Vector2 getZoteSpawn() { return zoteSpawn; }
-
     public List<Rectangle> getCameraZones() { return cameraZones; }
-
     public float getMapPixelWidth() { return mapPixelWidth; }
     public float getMapPixelHeight() { return mapPixelHeight; }
 

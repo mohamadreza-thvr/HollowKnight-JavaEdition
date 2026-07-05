@@ -19,6 +19,7 @@ public class GameModel {
     private List<EnemyModel> enemies;
     private List<VengefulSpiritModel> activeSpells;
     private List<HowlingWraithsModel> activeWraiths;
+    private List<CrystalProjectileModel> crystalProjectiles;
 
     private boolean mapChanged = false;
 
@@ -28,6 +29,7 @@ public class GameModel {
         enemies = new ArrayList<>();
         activeSpells = new ArrayList<>();
         activeWraiths = new ArrayList<>();
+        crystalProjectiles = new ArrayList<>();
 
         loadMap("maps/crossroad map/map.tmx");
     }
@@ -50,6 +52,7 @@ public class GameModel {
         enemies.clear();
         activeSpells.clear();
         activeWraiths.clear();
+        crystalProjectiles.clear();
 
         for (Vector2 pos : currentMap.getCrawlidSpawns()) {
             enemies.add(new CrawlidModel(pos.x, pos.y));
@@ -67,6 +70,10 @@ public class GameModel {
             enemies.add(new CrystalCrawlerModel(pos.x, pos.y));
         }
 
+        for (Vector2 pos : currentMap.getHunterSpawns()) {
+            enemies.add(new CrystalHunterModel(pos.x, pos.y));
+        }
+
         if (currentMap.getZoteSpawn() != null) {
             zote = new ZoteModel(currentMap.getZoteSpawn().x, currentMap.getZoteSpawn().y);
         } else {
@@ -82,6 +89,7 @@ public class GameModel {
     public ZoteModel getZote() { return zote; }
     public List<VengefulSpiritModel> getActiveSpells() { return activeSpells; }
     public List<HowlingWraithsModel> getActiveWraiths() { return activeWraiths; }
+    public List<CrystalProjectileModel> getCrystalProjectiles() { return crystalProjectiles; }
 
     public boolean isMapChanged() { return mapChanged; }
     public void setMapChanged(boolean mapChanged) { this.mapChanged = mapChanged; }

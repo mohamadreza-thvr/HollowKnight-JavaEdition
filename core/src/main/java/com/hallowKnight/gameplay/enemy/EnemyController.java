@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EnemyController {
 
-    public void updateEnemies(List<EnemyModel> enemies, float delta, MapModel mapModel, KnightModel knight) {
+    public void updateEnemies(List<EnemyModel> enemies, List<CrystalProjectileModel> projectiles, float delta, MapModel mapModel, KnightModel knight) {
         if (delta > 0.05f) delta = 0.05f;
 
         for (EnemyModel enemy : enemies) {
@@ -24,6 +24,8 @@ public class EnemyController {
                     updateCrawlid((CrawlidModel) enemy, delta, mapModel);
                 } else if (enemy instanceof CrystalCrawlerModel) {
                     updateCrystalCrawler((CrystalCrawlerModel) enemy, delta, mapModel);
+                } else if (enemy instanceof CrystalHunterModel) {
+                    updateCrystalHunter((CrystalHunterModel) enemy, projectiles, delta, knight);
                 } else if (enemy instanceof MosquitoModel) {
                     updateMosquito((MosquitoModel) enemy, delta, knight);
                 } else if (enemy instanceof HuskModel) {
@@ -32,6 +34,68 @@ public class EnemyController {
             }
 
             applyPhysics(enemy, delta, mapModel);
+        }
+
+        for (int i = projectiles.size() - 1; i >= 0; i--) {
+            CrystalProjectileModel proj = projectiles.get(i);
+            proj.update(delta);
+
+            if (proj.getBounds().overlaps(knight.getBounds())) {
+                knight.takeDamage(1);
+                projectiles.remove(i);
+                continue;
+            }
+
+            for (Rectangle solid : mapModel.getSolidBounds()) {
+                if (proj.getBounds().overlaps(solid)) {
+                    projectiles.remove(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void updateCrystalHunter(CrystalHunterModel hunter, List<CrystalProjectileModel> projectiles, float delta, KnightModel knight) {
+        float distance = Vector2.dst(hunter.getX(), hunter.getY(), knight.getX(), knight.getY());
+
+        if (!hunter.isHasAggro() && distance < 450f) {
+            hunter.setHasAggro(true);
+        }
+
+        hunter.setAttackCooldown(hunter.getAttackCooldown() - delta);
+
+        if (hunter.getCurrentState() == EnemyState.IDLE) {
+            if (hunter.isHasAggro()) {
+                float speed = 150f;
+                Vector2 dir = new Vector2(knight.getX() - hunter.getX(), (knight.getY() + 100f) - hunter.getY()).nor();
+                hunter.setVelocityX(dir.x * speed);
+                hunter.setVelocityY(dir.y * speed);
+                hunter.setFacingRight(hunter.getVelocityX() > 0);
+
+                if (distance < 350f && hunter.getAttackCooldown() <= 0) {
+                    hunter.setCurrentState(EnemyState.ANTICIPATE);
+                    hunter.setStateTimer(0f);
+                    hunter.setVelocityX(0);
+                    hunter.setVelocityY(0);
+                }
+            }
+        }
+        else if (hunter.getCurrentState() == EnemyState.ANTICIPATE) {
+            hunter.setStateTimer(hunter.getStateTimer() + delta);
+            if (hunter.getStateTimer() >= 0.5f) {
+                Vector2 dir = new Vector2(knight.getX() - hunter.getX(), knight.getY() - hunter.getY()).nor();
+                projectiles.add(new CrystalProjectileModel(hunter.getX() + hunter.getBounds().width / 2f, hunter.getY(), dir.x, dir.y));
+
+                hunter.setCurrentState(EnemyState.DASH);
+                hunter.setStateTimer(0f);
+                hunter.setAttackCooldown(3.0f);
+            }
+        }
+        else if (hunter.getCurrentState() == EnemyState.DASH) {
+            hunter.setStateTimer(hunter.getStateTimer() + delta);
+            if (hunter.getStateTimer() >= 0.6f) {
+                hunter.setCurrentState(EnemyState.IDLE);
+            }
         }
     }
 

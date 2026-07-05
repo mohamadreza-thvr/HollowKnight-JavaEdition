@@ -114,7 +114,7 @@ public class GameView {
         mapView.render(camera);
 
         batch.begin();
-        enemyView.render(batch, delta, model.getEnemies());
+        enemyView.render(batch, delta, model.getEnemies(), model.getCrystalProjectiles());
         knightView.render(batch, delta);
 
         spellView.render(batch, model.getActiveSpells());

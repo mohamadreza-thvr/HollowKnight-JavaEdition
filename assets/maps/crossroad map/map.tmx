@@ -4148,12 +4148,12 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="14" name="Camera Bounds" visible="0">
+ <objectgroup id="14" name="Camera Bounds">
   <object id="180" name="CameraZone" x="0" y="9.09091" width="4798.91" height="1522.48"/>
   <object id="181" name="CameraZone" x="4802" y="422" width="3188" height="672"/>
   <object id="183" name="CameraZone" x="4796" y="4" width="1148" height="386"/>
   <object id="184" x="8190" y="1464"/>
-  <object id="188" name="CameraZone" x="7233.33" y="1103.03" width="266.667" height="503.03"/>
+  <object id="188" name="CameraZone" x="7205.33" y="1103.03" width="294.667" height="495.03"/>
   <object id="189" name="CameraZone" x="3653.33" y="1606.91" width="3843.58" height="1095.09"/>
  </objectgroup>
 </map>
