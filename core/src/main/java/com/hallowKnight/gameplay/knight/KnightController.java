@@ -9,6 +9,7 @@ import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteModel;
+import com.hallowKnight.gameplay.boss.BossModel;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 
@@ -25,7 +26,7 @@ public class KnightController {
         this.game = game;
     }
 
-    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
+    public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, BossModel boss, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -57,7 +58,7 @@ public class KnightController {
 
         model.setWasGrounded(model.isGrounded());
 
-        handleInput(delta, enemies, zote, activeSpells, activeWraiths);
+        handleInput(delta, enemies, zote, boss, activeSpells, activeWraiths);
         applyPhysics(delta, mapModel);
 
         if (!model.isDead() && !model.isDashing()) {
@@ -65,6 +66,9 @@ public class KnightController {
                 if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
                     model.takeDamage(1);
                 }
+            }
+            if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
+                model.takeDamage(1);
             }
         }
 
@@ -109,7 +113,7 @@ public class KnightController {
         }
     }
 
-    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
+    private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, BossModel boss, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
 
         if (zote != null && zote.isTalking()) {
             model.setVelocityX(0);
@@ -147,6 +151,10 @@ public class KnightController {
                     if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
                         enemy.takeDamage(1, model.getX(), false);
                     }
+                }
+
+                if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
+                    boss.takeDamage(1);
                 }
             }
             return;
@@ -235,7 +243,6 @@ public class KnightController {
 
                 for (EnemyModel enemy : enemies) {
                     if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
-
                         enemy.takeDamage(baseDamage, model.getX(), isHeavy);
                         model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
@@ -245,6 +252,25 @@ public class KnightController {
                         }
                     }
                 }
+
+                if (boss != null && !boss.isDead() && !boss.isStunTriggered() && attackBox.overlaps(boss.getBounds())) {
+                    boss.takeDamage(baseDamage);
+                    model.setCurrentSoul(model.getCurrentSoul() + soulGain);
+
+                    if (model.getAttackDirection() == -1) {
+                        model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
+                        model.setCanDoubleJump(true);
+                    }
+                }
+                if (boss != null && !boss.isDead() && boss.isStunTriggered() && attackBox.overlaps(boss.getBounds())) {
+                    model.setCurrentSoul(model.getCurrentSoul() + soulGain);
+
+                    if (model.getAttackDirection() == -1) {
+                        model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
+                        model.setCanDoubleJump(true);
+                    }
+                }
+
 
                 if (zote != null && attackBox.overlaps(zote.getBounds())) {
                     zote.takeDamage();

@@ -116,7 +116,6 @@ public class HudView {
         int currentHealth = knightModel.getCurrentHealth();
         int maxHealth = 5;
 
-        // منطق جان‌ها
         if (currentHealth < lastHealth) {
             breakingIndex = currentHealth;
             breakTimer = 0f;

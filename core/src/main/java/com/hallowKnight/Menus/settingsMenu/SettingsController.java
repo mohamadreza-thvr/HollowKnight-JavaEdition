@@ -21,7 +21,6 @@ public class SettingsController {
     }
 
     private void setupListeners() {
-        // لیسنر برای اسلایدر موزیک
         view.getMusicSlider().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -30,7 +29,7 @@ public class SettingsController {
             }
         });
 
-        // لیسنر برای اسلایدر افکت‌های صوتی
+
         view.getSfxSlider().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -39,7 +38,6 @@ public class SettingsController {
             }
         });
 
-        // لیسنر برای دکمه تغییر زبان
         view.getLanguageButton().addListener(new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -60,7 +58,6 @@ public class SettingsController {
             }
         });
 
-        // لیسنر برای دکمه Back
         view.getBackButton().addListener(new ClickListener() {
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {

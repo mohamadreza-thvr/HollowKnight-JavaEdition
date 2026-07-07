@@ -96,7 +96,7 @@ public class EnemyController {
                 guardian.setStateTimer(0f);
             }
         }
-        else if (guardian.getCurrentState() == EnemyState.DASH) { // فاز خشم (Enraged)
+        else if (guardian.getCurrentState() == EnemyState.DASH) {
             guardian.setEnrageTimer(guardian.getEnrageTimer() - delta);
             guardian.setStateTimer(guardian.getStateTimer() + delta);
 

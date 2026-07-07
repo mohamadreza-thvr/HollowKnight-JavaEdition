@@ -25,7 +25,7 @@ public class PauseView {
 
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0, 0, 0, 0.7f)); // مشکی با ۷۰ درصد شفافیت
+        pixmap.setColor(new Color(0, 0, 0, 0.7f));
         pixmap.fill();
         darkOverlay = new Texture(pixmap);
         pixmap.dispose();

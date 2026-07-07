@@ -2,6 +2,9 @@ package com.hallowKnight.gameplay.core;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Rectangle;
+import com.hallowKnight.gameplay.boss.BossController;
+import com.hallowKnight.gameplay.boss.BossModel;
+import com.hallowKnight.gameplay.boss.BossState;
 import com.hallowKnight.gameplay.knight.KnightController;
 import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.enemy.EnemyController;
@@ -16,35 +19,110 @@ public class GameController {
     private KnightController knightController;
     private EnemyController enemyController;
     private ZoteController zoteController;
+    private BossController bossController;
+
+    private final String CROSSROAD_MAP = "maps/crossroad map/map.tmx";
+    private final String CRYSTAL_MAP   = "maps/crystal map/untitled.tmx";
+    private final String BOSS_MAP      = "maps/boss map/boss.tmx";
+
+    private String currentMapPath = CROSSROAD_MAP;
 
     public GameController(GameModel model, Game game) {
         this.game = game;
         this.model = model;
         this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
-        this.enemyController = new EnemyController();
-        this.zoteController = new ZoteController();
+        this.enemyController  = new EnemyController();
+        this.zoteController   = new ZoteController();
+        this.bossController   = new BossController();
     }
 
     public void update(float delta) {
-
         Rectangle knightBounds = model.getKnightModel().getBounds();
 
-        if (model.getCurrentMap().getGateBounds() != null && knightBounds.overlaps(model.getCurrentMap().getGateBounds())) {
-            transitionToMap("maps/crystal map/untitled.tmx");
-            return;
-        }
-        else if (model.getCurrentMap().getBossGateBounds() != null && knightBounds.overlaps(model.getCurrentMap().getBossGateBounds())) {
-            transitionToMap("maps/crossroad map/map.tmx");
+        if (model.getCurrentMap().getGateBounds() != null
+            && knightBounds.overlaps(model.getCurrentMap().getGateBounds())) {
+            if (currentMapPath.equals(CROSSROAD_MAP)) {
+                transitionToMap(CRYSTAL_MAP);
+            } else if (currentMapPath.equals(CRYSTAL_MAP)) {
+                transitionToMap(CROSSROAD_MAP);
+            }
             return;
         }
 
-        enemyController.updateEnemies(model.getEnemies(), model.getCrystalProjectiles(), delta, model.getCurrentMap(), model.getKnightModel());
+        if (model.getCurrentMap().getBossGateBounds() != null
+            && knightBounds.overlaps(model.getCurrentMap().getBossGateBounds())) {
+            if (currentMapPath.equals(CRYSTAL_MAP)) {
+                transitionToMap(BOSS_MAP);
+            } else if (currentMapPath.equals(BOSS_MAP)) {
+                BossModel boss = model.getBoss();
+                boolean isBossDead = (boss == null || boss.isDead());
+                if (isBossDead) {
+                    transitionToMap(CRYSTAL_MAP);
+                } else {
+                    model.getKnightModel().setX(model.getKnightModel().getX() + 20f);
+                    model.getKnightModel().updateBounds();
+                }
+            }
+            return;
+        }
+
+        if(model.getCurrentMap().getBackGateBounds() != null
+            && knightBounds.overlaps(model.getCurrentMap().getBackGateBounds())
+            && model.getBoss().isDead()){
+            transitionToMap(CRYSTAL_MAP);
+        }
+
+        enemyController.updateEnemies(
+            model.getEnemies(),
+            model.getCrystalProjectiles(),
+            delta,
+            model.getCurrentMap(),
+            model.getKnightModel()
+        );
 
         if (model.getZote() != null) {
             zoteController.update(model.getZote(), delta, model.getKnightModel());
         }
 
-        knightController.update(delta, model.getEnemies(), model.getZote(), model.getActiveSpells(), model.getActiveWraiths());
+        BossModel boss = model.getBoss();
+        if (boss != null) {
+            bossController.update(boss, delta, model.getKnightModel(), model.getCurrentMap());
+
+            Rectangle hitbox = boss.getAttackHitbox();
+            if (hitbox.width > 0 && hitbox.overlaps(model.getKnightModel().getBounds())) {
+                model.getKnightModel().takeDamage(1);
+            }
+
+            boolean hasVoidHeart = model.getKnightModel().isCharmEquipped(KnightModel.Charm.VOID_HEART);
+
+            for (int i = model.getActiveSpells().size() - 1; i >= 0; i--) {
+                VengefulSpiritModel spell = model.getActiveSpells().get(i);
+                if (!boss.isDead() && spell.getBounds().overlaps(boss.getBounds()) && !boss.isSpellHit()) {
+                    int spellDamage = hasVoidHeart ? 3 : 2;
+                    boss.takeDamage(spellDamage);
+                    boss.setSpellHit(true);
+                    spell.setActive(false);
+                }
+            }
+
+            for (int i = model.getActiveWraiths().size() - 1; i >= 0; i--) {
+                HowlingWraithsModel wraith = model.getActiveWraiths().get(i);
+                if (!boss.isDead() && wraith.getBounds().overlaps(boss.getBounds()) && !boss.isWraithHit()) {
+                    int baseDamage = hasVoidHeart ? 2 : 1;
+                    boss.takeDamage(baseDamage);
+                    boss.setWraithHit(true);
+                }
+            }
+        }
+
+        knightController.update(
+            delta,
+            model.getEnemies(),
+            model.getZote(),
+            model.getBoss(),
+            model.getActiveSpells(),
+            model.getActiveWraiths()
+        );
 
         boolean hasVoidHeart = model.getKnightModel().isCharmEquipped(KnightModel.Charm.VOID_HEART);
 
@@ -64,9 +142,7 @@ public class GameController {
                 model.getZote().takeDamage();
                 spell.setActive(false);
             }
-            if (!spell.isActive()) {
-                model.getActiveSpells().remove(i);
-            }
+            if (!spell.isActive()) model.getActiveSpells().remove(i);
         }
 
         for (int i = model.getActiveWraiths().size() - 1; i >= 0; i--) {
@@ -75,12 +151,8 @@ public class GameController {
 
             for (EnemyModel enemy : model.getEnemies()) {
                 if (!enemy.isDead() && wraith.getBounds().overlaps(enemy.getBounds()) && !wraith.hasHit(enemy)) {
-
-                    int baseDamage = 1;
-                    float finalDamage = hasVoidHeart ? baseDamage * 1.5f : baseDamage;
-                    int calculatedDamage = Math.max(1, Math.round(finalDamage));
-
-                    enemy.takeDamage(calculatedDamage, wraith.getX() + (wraith.getBounds().width / 2f), false);
+                    int baseDamage = hasVoidHeart ? 2 : 1;
+                    enemy.takeDamage(baseDamage, wraith.getX() + wraith.getBounds().width / 2f, false);
                     wraith.addHitEnemy(enemy);
                 }
             }
@@ -89,15 +161,13 @@ public class GameController {
                 model.getZote().takeDamage();
                 wraith.setActive(false);
             }
-
-            if (!wraith.isActive()) {
-                model.getActiveWraiths().remove(i);
-            }
+            if (!wraith.isActive()) model.getActiveWraiths().remove(i);
         }
     }
 
     private void transitionToMap(String newMapPath) {
         model.loadMap(newMapPath);
+        this.currentMapPath = newMapPath;
         this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
     }
 }

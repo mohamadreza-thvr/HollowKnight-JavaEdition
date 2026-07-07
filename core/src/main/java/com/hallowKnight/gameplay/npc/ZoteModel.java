@@ -16,7 +16,7 @@ public class ZoteModel {
     public static final float ROLL_DISTANCE_THRESHOLD = 250f;
 
 
-    // دیالوگ‌ها
+
     private boolean playerInRange = false;
     private boolean isTalking = false;
     private int dialogueIndex = 0;

@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.hallowKnight.gameplay.boss.BossModel;
+import com.hallowKnight.gameplay.boss.BossView;
 import com.hallowKnight.gameplay.npc.ZoteView;
 import com.hallowKnight.gameplay.hud.HudView;
 import com.hallowKnight.gameplay.knight.KnightView;
@@ -29,6 +31,7 @@ public class GameView {
 
     private KnightView knightView;
     private ZoteView zoteView = new ZoteView();
+    private BossView bossView;
 
     private EnemyView enemyView;
 
@@ -51,6 +54,7 @@ public class GameView {
 
         this.knightView = new KnightView(model.getKnightModel());
         this.enemyView = new EnemyView();
+        this.bossView  = new BossView();
         this.spellView = new VengefulSpiritView(model.getKnightModel());
         this.wraithsView = new HowlingWraithsView();
     }
@@ -58,18 +62,17 @@ public class GameView {
     public void render(float delta) {
         if (model.isMapChanged()) {
             if (mapView != null) mapView.dispose();
-            mapView = new com.hallowKnight.gameplay.map.MapView(model.getCurrentMap());
+            mapView = new MapView(model.getCurrentMap());
             model.setMapChanged(false);
         }
 
-        float cameraHalfWidth = camera.viewportWidth / 2f;
+        float cameraHalfWidth  = camera.viewportWidth  / 2f;
         float cameraHalfHeight = camera.viewportHeight / 2f;
 
         float knightX = model.getKnightModel().getX();
         float knightY = model.getKnightModel().getY();
 
         Rectangle currentZone = null;
-
         if (model.getCurrentMap().getCameraZones() != null) {
             for (Rectangle zone : model.getCurrentMap().getCameraZones()) {
                 if (zone.contains(knightX, knightY)) {
@@ -80,24 +83,30 @@ public class GameView {
         }
 
         float minX, maxX, minY, maxY;
-
         if (currentZone != null) {
             minX = currentZone.x + cameraHalfWidth;
-            maxX = Math.max(minX, currentZone.x + currentZone.width - cameraHalfWidth);
+            maxX = Math.max(minX, currentZone.x + currentZone.width  - cameraHalfWidth);
             minY = currentZone.y + cameraHalfHeight;
             maxY = Math.max(minY, currentZone.y + currentZone.height - cameraHalfHeight);
         } else {
-            float mapWidth = model.getCurrentMap().getMapPixelWidth();
+            float mapWidth  = model.getCurrentMap().getMapPixelWidth();
             float mapHeight = model.getCurrentMap().getMapPixelHeight();
             minX = cameraHalfWidth;
-            maxX = Math.max(minX, mapWidth - cameraHalfWidth);
+            maxX = Math.max(minX, mapWidth  - cameraHalfWidth);
             minY = cameraHalfHeight;
             maxY = Math.max(minY, mapHeight - cameraHalfHeight);
         }
 
         float targetY = knightY + 70f;
         float camX = MathUtils.clamp(knightX, minX, maxX);
-        float camY = MathUtils.clamp(targetY, minY, maxY);
+        float camY = MathUtils.clamp(targetY,  minY, maxY);
+
+        BossModel boss = model.getBoss();
+        if (boss != null && boss.getCameraShakeTimer() > 0) {
+            float intensity = boss.getCameraShakeIntensity();
+            camX += MathUtils.random(-intensity, intensity);
+            camY += MathUtils.random(-intensity, intensity);
+        }
 
         camera.position.set(camX, camY, 0);
         camera.update();
@@ -121,48 +130,61 @@ public class GameView {
         wraithsView.render(batch, model.getActiveWraiths());
 
         zoteView.renderWorld(batch, delta, model.getZote());
+
+        if (boss != null) {
+            bossView.render(batch, boss, delta);
+        }
+
         batch.end();
 
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
         shapeRenderer.setColor(Color.RED);
-        for (Rectangle solid : model.getCurrentMap().getSolidBounds()) {
+        for (Rectangle solid : model.getCurrentMap().getSolidBounds())
             shapeRenderer.rect(solid.x, solid.y, solid.width, solid.height);
-        }
 
         shapeRenderer.setColor(Color.YELLOW);
-        for (Rectangle deadly : model.getCurrentMap().getDeadlyBounds()) {
+        for (Rectangle deadly : model.getCurrentMap().getDeadlyBounds())
             shapeRenderer.rect(deadly.x, deadly.y, deadly.width, deadly.height);
-        }
 
         shapeRenderer.setColor(Color.PURPLE);
         for (EnemyModel enemy : model.getEnemies()) {
-            Rectangle enemyRect = enemy.getBounds();
-            shapeRenderer.rect(enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height);
+            Rectangle r = enemy.getBounds();
+            shapeRenderer.rect(r.x, r.y, r.width, r.height);
+        }
+
+        if (boss != null) {
+            shapeRenderer.setColor(Color.ORANGE);
+            Rectangle br = boss.getBounds();
+            shapeRenderer.rect(br.x, br.y, br.width, br.height);
+
+            Rectangle bh = boss.getAttackHitbox();
+            if (bh.width > 0) {
+                shapeRenderer.setColor(Color.RED);
+                shapeRenderer.rect(bh.x, bh.y, bh.width, bh.height);
+            }
         }
 
         shapeRenderer.setColor(Color.GREEN);
-        Rectangle knightRect = model.getKnightModel().getBounds();
-        shapeRenderer.rect(knightRect.x, knightRect.y, knightRect.width, knightRect.height);
+        Rectangle kr = model.getKnightModel().getBounds();
+        shapeRenderer.rect(kr.x, kr.y, kr.width, kr.height);
 
         if (model.getZote() != null) {
             shapeRenderer.setColor(Color.CYAN);
-            Rectangle zoteRect = model.getZote().getBounds();
-            shapeRenderer.rect(zoteRect.x, zoteRect.y, zoteRect.width, zoteRect.height);
+            Rectangle zr = model.getZote().getBounds();
+            shapeRenderer.rect(zr.x, zr.y, zr.width, zr.height);
         }
 
         if (model.getCurrentMap().getCameraZones() != null) {
             shapeRenderer.setColor(Color.NAVY);
-            for (Rectangle zone : model.getCurrentMap().getCameraZones()) {
+            for (Rectangle zone : model.getCurrentMap().getCameraZones())
                 shapeRenderer.rect(zone.x, zone.y, zone.width, zone.height);
-            }
         }
 
         shapeRenderer.end();
 
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
         batch.begin();
         hudView.render(batch, delta);
         batch.end();
@@ -180,8 +202,8 @@ public class GameView {
         shapeRenderer.dispose();
         knightView.dispose();
         zoteView.dispose();
-
-        if (enemyView != null) enemyView.dispose();
-        if (spellView != null) spellView.dispose();
+        if (enemyView   != null) enemyView.dispose();
+        if (spellView   != null) spellView.dispose();
+        if (bossView    != null) bossView.dispose();
     }
 }

@@ -20,9 +20,11 @@ public class MapModel {
     private List<Rectangle> deadlyBounds;
     private Rectangle gateBounds;
     private Rectangle bossGateBounds;
+    private Rectangle backGateBounds;
 
     private Vector2 knightSpawn;
     private Vector2 zoteSpawn;
+    private Vector2 bossSpawn;
 
     private List<Vector2> crawlidSpawns;
     private List<Vector2> mosquitoSpawns;
@@ -94,6 +96,9 @@ public class MapModel {
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Zote Spawn")) {
                     zoteSpawn = new Vector2(objX, objY);
                 }
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Boss Spawn")) {
+                    bossSpawn = new Vector2(objX, objY);
+                }
                 else if (object instanceof RectangleMapObject) {
                     Rectangle rect = ((RectangleMapObject) object).getRectangle();
 
@@ -105,6 +110,8 @@ public class MapModel {
                             gateBounds = rect;
                         } else if (cleanName.equalsIgnoreCase("Boss Gate")) {
                             bossGateBounds = rect;
+                        } else if (cleanName.equalsIgnoreCase("Back Gate")) {
+                            backGateBounds = rect;
                         } else if (cleanName.equalsIgnoreCase("CameraZone")) {
                             cameraZones.add(rect);
                         } else {
@@ -123,6 +130,7 @@ public class MapModel {
     public List<Rectangle> getDeadlyBounds() { return deadlyBounds; }
     public Rectangle getGateBounds() { return gateBounds; }
     public Rectangle getBossGateBounds() { return bossGateBounds; }
+    public Rectangle getBackGateBounds() { return backGateBounds; }
     public Vector2 getKnightSpawn() { return knightSpawn; }
 
     public List<Vector2> getCrawlidSpawns() { return crawlidSpawns; }
@@ -133,6 +141,7 @@ public class MapModel {
     public List<Vector2> getGuardianSpawns() { return guardianSpawns; }
 
     public Vector2 getZoteSpawn() { return zoteSpawn; }
+    public Vector2 getBossSpawn() { return bossSpawn; }
     public List<Rectangle> getCameraZones() { return cameraZones; }
     public float getMapPixelWidth() { return mapPixelWidth; }
     public float getMapPixelHeight() { return mapPixelHeight; }

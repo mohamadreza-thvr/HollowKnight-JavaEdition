@@ -83,7 +83,6 @@ public class MainMenuController {
             }
         });
 
-        //----------------------------------
 
         view.getSettingsButton().addListener(new ClickListener() {
 
