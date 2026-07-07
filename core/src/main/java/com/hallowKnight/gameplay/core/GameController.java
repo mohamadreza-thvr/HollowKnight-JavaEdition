@@ -12,6 +12,7 @@ import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteController;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
+import com.hallowKnight.gameplay.core.AudioManager; // ⚠️ ایمپورت اضافه شد
 
 public class GameController {
     private Game game;
@@ -34,6 +35,8 @@ public class GameController {
         this.enemyController  = new EnemyController();
         this.zoteController   = new ZoteController();
         this.bossController   = new BossController();
+
+        playMapMusic(currentMapPath);
     }
 
     public void update(float delta) {
@@ -169,5 +172,17 @@ public class GameController {
         model.loadMap(newMapPath);
         this.currentMapPath = newMapPath;
         this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
+
+        playMapMusic(newMapPath);
+    }
+
+    private void playMapMusic(String mapPath) {
+        if (mapPath.equals(CROSSROAD_MAP)) {
+            AudioManager.playMusic("audio/music/Crossroads.mp3");
+        } else if (mapPath.equals(CRYSTAL_MAP)) {
+            AudioManager.playMusic("audio/music/Crystal Peak.mp3");
+        } else if (mapPath.equals(BOSS_MAP)) {
+            AudioManager.playMusic("audio/music/boss_fight.wav");
+        }
     }
 }

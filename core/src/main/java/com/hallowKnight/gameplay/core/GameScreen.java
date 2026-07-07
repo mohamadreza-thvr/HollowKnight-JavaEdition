@@ -22,7 +22,6 @@ public class GameScreen implements Screen {
     private GameView view;
     private Game game;
 
-
     private PauseView pauseView;
     private PauseController pauseController;
     private InventoryView inventoryView;
@@ -45,13 +44,24 @@ public class GameScreen implements Screen {
 
             @Override
             public void onSettingsClicked() {
-                System.out.println("Opening Settings...");
-                //TODO : programing setting
+                System.out.println("Opening Settings from Game...");
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        game.setScreen(new com.hallowKnight.Menus.settingsMenu.SettingsScreen(game, GameScreen.this));
+                    }
+                });
             }
 
             @Override
             public void onQuitClicked() {
-                game.setScreen(new MainMenuScreen(game));
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        game.setScreen(new MainMenuScreen(game));
+                        dispose();
+                    }
+                });
             }
         });
 
@@ -60,11 +70,19 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(null);
+        if (currentState == GameState.PAUSED && pauseView != null) {
+            Gdx.input.setInputProcessor(pauseView.getStage());
+        } else if (currentState == GameState.INVENTORY && inventoryView != null) {
+            Gdx.input.setInputProcessor(inventoryView.getStage());
+        } else {
+            Gdx.input.setInputProcessor(null);
+        }
     }
 
     @Override
     public void render(float delta) {
+        AudioManager.update(delta);
+
         System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
         checkMenuInputs();
 
@@ -127,9 +145,7 @@ public class GameScreen implements Screen {
     @Override public void resume() {}
 
     @Override
-    public void hide() {
-        dispose();
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {
@@ -137,5 +153,4 @@ public class GameScreen implements Screen {
         if (pauseView != null) pauseView.dispose();
         if (inventoryView != null) inventoryView.dispose();
     }
-
 }

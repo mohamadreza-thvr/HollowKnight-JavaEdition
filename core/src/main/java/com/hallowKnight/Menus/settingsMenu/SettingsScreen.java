@@ -10,12 +10,15 @@ public class SettingsScreen implements Screen {
     private SettingsView view;
     private SettingsController controller;
     private Game game;
+    private Screen previousScreen;
 
-    public SettingsScreen(Game game) {
+    public SettingsScreen(Game game, Screen previousScreen) {
         model = new SettingsModel();
         view = new SettingsView(model);
         this.game = game;
-        controller = new SettingsController(model, view, game);
+        this.previousScreen = previousScreen;
+
+        controller = new SettingsController(model, view, game, previousScreen);
     }
 
     @Override

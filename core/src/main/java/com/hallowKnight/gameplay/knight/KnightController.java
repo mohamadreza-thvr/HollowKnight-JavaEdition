@@ -12,6 +12,7 @@ import com.hallowKnight.gameplay.npc.ZoteModel;
 import com.hallowKnight.gameplay.boss.BossModel;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
+import com.hallowKnight.gameplay.core.AudioManager;
 
 import java.util.List;
 
@@ -64,10 +65,12 @@ public class KnightController {
         if (!model.isDead() && !model.isDashing()) {
             for (EnemyModel enemy : enemies) {
                 if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
+                    if (!model.isInvulnerable()) AudioManager.playTakeDamage(); //  صدای دمیج
                     model.takeDamage(1);
                 }
             }
             if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
+                if (!model.isInvulnerable()) AudioManager.playTakeDamage(); // صدای دمیج
                 model.takeDamage(1);
             }
         }
@@ -168,6 +171,7 @@ public class KnightController {
                 model.setCastingUp(true);
                 model.setCastTimer(0.65f);
                 activeWraiths.add(new HowlingWraithsModel(model.getX(), model.getY(), model.getBounds().width, model.getBounds().height));
+                AudioManager.playScream();
             } else {
                 model.setCastingUp(false);
                 model.setCastTimer(0.4f);
@@ -193,6 +197,7 @@ public class KnightController {
 
             model.setFocusing(false);
             model.setWallSliding(false);
+            AudioManager.playDash();
             return;
         }
 
@@ -208,6 +213,8 @@ public class KnightController {
             if (Gdx.input.isKeyJustPressed(Input.Keys.X) && !model.isAttacking()) {
                 model.setAttacking(true);
                 model.setAttackTimer(0f);
+
+                AudioManager.playNailSlash();
 
                 Rectangle attackBox = new Rectangle();
                 float reach = 80f;
@@ -246,6 +253,8 @@ public class KnightController {
                         enemy.takeDamage(baseDamage, model.getX(), isHeavy);
                         model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
+                        AudioManager.playSoulGain();
+
                         if (model.getAttackDirection() == -1) {
                             model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
                             model.setCanDoubleJump(true);
@@ -257,6 +266,8 @@ public class KnightController {
                     boss.takeDamage(baseDamage);
                     model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
+                    AudioManager.playSoulGain();
+
                     if (model.getAttackDirection() == -1) {
                         model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
                         model.setCanDoubleJump(true);
@@ -265,12 +276,13 @@ public class KnightController {
                 if (boss != null && !boss.isDead() && boss.isStunTriggered() && attackBox.overlaps(boss.getBounds())) {
                     model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
+                    AudioManager.playSoulGain();
+
                     if (model.getAttackDirection() == -1) {
                         model.setVelocityY(Constance.JUMP_FORCE * 1.5f);
                         model.setCanDoubleJump(true);
                     }
                 }
-
 
                 if (zote != null && attackBox.overlaps(zote.getBounds())) {
                     zote.takeDamage();
@@ -337,6 +349,8 @@ public class KnightController {
                     model.setCurrentSoul(model.getCurrentSoul() - 20);
                     model.heal(1);
                     model.setFocusTimer(0f);
+
+                    AudioManager.playFocus();
                 }
             } else {
                 model.setFocusTimer(0f);
@@ -437,6 +451,7 @@ public class KnightController {
         for (Rectangle spike : mapModel.getDeadlyBounds()) {
             if (model.getBounds().overlaps(spike)) {
 
+                if (!model.isInvulnerable()) AudioManager.playTakeDamage();
                 model.takeDamage(1);
 
                 if (!model.isDead()) {

@@ -4147,7 +4147,6 @@
   <object id="228" name="Spawn Mosquito" x="5927.27" y="2118.18">
    <point/>
   </object>
-  <object id="229" name="Gate" x="426" y="1202" width="104" height="224"/>
  </objectgroup>
  <objectgroup id="14" name="Camera Bounds" visible="0">
   <object id="180" name="CameraZone" x="0" y="9.09091" width="4798.91" height="1522.48"/>
