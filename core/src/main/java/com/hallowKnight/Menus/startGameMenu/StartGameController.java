@@ -1,6 +1,7 @@
 package com.hallowKnight.Menus.startGameMenu;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -38,12 +39,15 @@ public class StartGameController {
                     btn.getLabel().setColor(Color.WHITE);
                 }
 
-
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Loading / Starting Game from Slot: " + model.getSaveSlots().get(slotIndex));
-                    // TODO: after writing the game screen
-                    game.setScreen(new GameScreen(game));
+                    System.out.println("Loading / Starting Game from Slot: " + slotIndex);
+                    Gdx.app.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            game.setScreen(new GameScreen(game, slotIndex));
+                        }
+                    });
                 }
             });
         }
@@ -61,8 +65,13 @@ public class StartGameController {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Returning to Main Menu...");
-                game.setScreen(new MainMenuScreen(game));
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Returning to Main Menu...");
+                        game.setScreen(new MainMenuScreen(game));
+                    }
+                });
             }
         });
     }

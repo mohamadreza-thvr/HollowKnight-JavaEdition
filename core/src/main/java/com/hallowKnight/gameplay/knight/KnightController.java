@@ -13,6 +13,7 @@ import com.hallowKnight.gameplay.boss.BossModel;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 import com.hallowKnight.gameplay.core.AudioManager;
+import com.hallowKnight.gameplay.core.AchievementManager;
 
 import java.util.List;
 
@@ -20,11 +21,13 @@ public class KnightController {
     private Game game;
     private KnightModel model;
     private MapModel mapModel;
+    private int slotIndex;
 
-    public KnightController(KnightModel model, MapModel mapModel, Game game) {
+    public KnightController(KnightModel model, MapModel mapModel, Game game, int slotIndex) {
         this.model = model;
         this.mapModel = mapModel;
         this.game = game;
+        this.slotIndex = slotIndex;
     }
 
     public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, BossModel boss, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
@@ -38,7 +41,7 @@ public class KnightController {
             applyPhysics(delta, mapModel);
 
             if (model.getDeathTimer() > 1.4f) {
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, slotIndex));
             }
             return;
         }
@@ -65,12 +68,12 @@ public class KnightController {
         if (!model.isDead() && !model.isDashing()) {
             for (EnemyModel enemy : enemies) {
                 if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
-                    if (!model.isInvulnerable()) AudioManager.playTakeDamage(); //  صدای دمیج
+                    if (!model.isInvulnerable()) AudioManager.playTakeDamage();
                     model.takeDamage(1);
                 }
             }
             if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
-                if (!model.isInvulnerable()) AudioManager.playTakeDamage(); // صدای دمیج
+                if (!model.isInvulnerable()) AudioManager.playTakeDamage();
                 model.takeDamage(1);
             }
         }
@@ -250,9 +253,14 @@ public class KnightController {
 
                 for (EnemyModel enemy : enemies) {
                     if (!enemy.isDead() && attackBox.overlaps(enemy.getBounds())) {
+                        boolean wasEnemyDead = enemy.isDead();
                         enemy.takeDamage(baseDamage, model.getX(), isHeavy);
-                        model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
+                        if (!wasEnemyDead && enemy.isDead()) {
+                            AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                        }
+
+                        model.setCurrentSoul(model.getCurrentSoul() + soulGain);
                         AudioManager.playSoulGain();
 
                         if (model.getAttackDirection() == -1) {
@@ -263,9 +271,14 @@ public class KnightController {
                 }
 
                 if (boss != null && !boss.isDead() && !boss.isStunTriggered() && attackBox.overlaps(boss.getBounds())) {
+                    boolean wasBossDead = boss.isDead();
                     boss.takeDamage(baseDamage);
-                    model.setCurrentSoul(model.getCurrentSoul() + soulGain);
 
+                    if (!wasBossDead && boss.isDead()) {
+                        AchievementManager.getInstance().unlockAchievement("Defeat False Knight");
+                    }
+
+                    model.setCurrentSoul(model.getCurrentSoul() + soulGain);
                     AudioManager.playSoulGain();
 
                     if (model.getAttackDirection() == -1) {
@@ -273,9 +286,9 @@ public class KnightController {
                         model.setCanDoubleJump(true);
                     }
                 }
+
                 if (boss != null && !boss.isDead() && boss.isStunTriggered() && attackBox.overlaps(boss.getBounds())) {
                     model.setCurrentSoul(model.getCurrentSoul() + soulGain);
-
                     AudioManager.playSoulGain();
 
                     if (model.getAttackDirection() == -1) {

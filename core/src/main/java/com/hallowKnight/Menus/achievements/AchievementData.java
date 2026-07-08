@@ -6,6 +6,8 @@ public class AchievementData {
     private String iconPath;
     private boolean isUnlocked;
 
+    public AchievementData() {}
+
     public AchievementData(String title, String description, String iconPath, boolean isUnlocked) {
         this.title = title;
         this.description = description;

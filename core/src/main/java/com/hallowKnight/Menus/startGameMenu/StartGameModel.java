@@ -1,5 +1,7 @@
 package com.hallowKnight.Menus.startGameMenu;
 
+import com.hallowKnight.gameplay.core.SaveManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,9 +10,13 @@ public class StartGameModel {
 
     public StartGameModel() {
         saveSlots = new ArrayList<>();
-        saveSlots.add("Save Slot 1 (Empty)");
-        saveSlots.add("Save Slot 2 (Empty)");
-        saveSlots.add("Save Slot 3 (Empty)");
+        for (int i = 0; i < 3; i++) {
+            if (SaveManager.saveExists(i)) {
+                saveSlots.add("Save Slot " + (i + 1) + " (Continue)");
+            } else {
+                saveSlots.add("Save Slot " + (i + 1) + " (New Game)");
+            }
+        }
     }
 
     public List<String> getSaveSlots() {

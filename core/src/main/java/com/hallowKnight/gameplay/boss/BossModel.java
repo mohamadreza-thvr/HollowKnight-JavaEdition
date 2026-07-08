@@ -37,6 +37,7 @@ public class BossModel {
     private final Rectangle bounds;
 
     private int hp = MAX_HP;
+
     private boolean isDead = false;
 
     private float invulnerabilityTimer = 0f;
@@ -123,6 +124,7 @@ public class BossModel {
     public Rectangle getBounds() { return bounds; }
     public int getHp() { return hp; }
     public boolean isDead() { return isDead; }
+    public void setDead(boolean dead) { isDead = dead;}
     public BossState getCurrentState() { return currentState; }
     public void setCurrentState(BossState s) { this.currentState = s; }
     public float getStateTimer() { return stateTimer; }
@@ -159,6 +161,7 @@ public class BossModel {
     public void setHitReactTimer(float hitReactTimer) { this.hitReactTimer = hitReactTimer; }
     public float getHitReactStateTime() { return hitReactStateTime; }
     public void setHitReactStateTime(float hitReactStateTime) { this.hitReactStateTime = hitReactStateTime; }
+
 
     public void triggerCameraShake(float intensity, float duration) {
         this.cameraShakeIntensity = intensity;

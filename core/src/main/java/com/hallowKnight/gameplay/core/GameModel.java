@@ -24,6 +24,7 @@ public class GameModel {
     private List<CrystalProjectileModel> crystalProjectiles;
 
     private boolean mapChanged = false;
+    private String currentMapPath;
 
     public GameModel() {
         knightModel = new KnightModel(0, 0);
@@ -37,6 +38,8 @@ public class GameModel {
     }
 
     public void loadMap(String mapPath) {
+        this.currentMapPath = mapPath;
+
         if (currentMap != null) currentMap.dispose();
 
         currentMap = new MapModel(mapPath);
@@ -92,6 +95,7 @@ public class GameModel {
     public List<VengefulSpiritModel> getActiveSpells() { return activeSpells; }
     public List<HowlingWraithsModel> getActiveWraiths() { return activeWraiths; }
     public List<CrystalProjectileModel> getCrystalProjectiles() { return crystalProjectiles; }
+    public String getCurrentMapPath() { return currentMapPath; } // ⚠️ گتر اضافه شد
 
     public boolean isMapChanged() { return mapChanged; }
     public void setMapChanged(boolean mapChanged) { this.mapChanged = mapChanged; }

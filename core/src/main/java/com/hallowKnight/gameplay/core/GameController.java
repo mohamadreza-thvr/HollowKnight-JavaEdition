@@ -12,7 +12,8 @@ import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteController;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
-import com.hallowKnight.gameplay.core.AudioManager; // ⚠️ ایمپورت اضافه شد
+import com.hallowKnight.gameplay.core.AudioManager;
+import com.hallowKnight.gameplay.core.AchievementManager;
 
 public class GameController {
     private Game game;
@@ -21,21 +22,25 @@ public class GameController {
     private EnemyController enemyController;
     private ZoteController zoteController;
     private BossController bossController;
+    private int slotIndex;
 
     private final String CROSSROAD_MAP = "maps/crossroad map/map.tmx";
     private final String CRYSTAL_MAP   = "maps/crystal map/untitled.tmx";
     private final String BOSS_MAP      = "maps/boss map/boss.tmx";
 
-    private String currentMapPath = CROSSROAD_MAP;
+    private String currentMapPath;
 
-    public GameController(GameModel model, Game game) {
+    public GameController(GameModel model, Game game, int slotIndex) {
         this.game = game;
         this.model = model;
-        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
+        this.slotIndex = slotIndex;
+
+        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game, slotIndex);
         this.enemyController  = new EnemyController();
         this.zoteController   = new ZoteController();
         this.bossController   = new BossController();
 
+        this.currentMapPath = model.getCurrentMapPath();
         playMapMusic(currentMapPath);
     }
 
@@ -135,9 +140,14 @@ public class GameController {
 
             for (EnemyModel enemy : model.getEnemies()) {
                 if (!enemy.isDead() && spell.getBounds().overlaps(enemy.getBounds()) && !spell.hasHit(enemy)) {
+                    boolean wasEnemyDead = enemy.isDead();
                     int spellDamage = hasVoidHeart ? 3 : 2;
                     enemy.takeDamage(spellDamage, spell.getX(), false);
                     spell.addHitEnemy(enemy);
+
+                    if (!wasEnemyDead && enemy.isDead()) {
+                        AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                    }
                 }
             }
 
@@ -154,9 +164,14 @@ public class GameController {
 
             for (EnemyModel enemy : model.getEnemies()) {
                 if (!enemy.isDead() && wraith.getBounds().overlaps(enemy.getBounds()) && !wraith.hasHit(enemy)) {
+                    boolean wasEnemyDead = enemy.isDead();
                     int baseDamage = hasVoidHeart ? 2 : 1;
                     enemy.takeDamage(baseDamage, wraith.getX() + wraith.getBounds().width / 2f, false);
                     wraith.addHitEnemy(enemy);
+
+                    if (!wasEnemyDead && enemy.isDead()) {
+                        AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                    }
                 }
             }
 
@@ -169,9 +184,18 @@ public class GameController {
     }
 
     private void transitionToMap(String newMapPath) {
+        if (currentMapPath.equals(BOSS_MAP) && newMapPath.equals(CRYSTAL_MAP)) {
+            if (model.getBoss() != null && model.getBoss().isDead()) {
+                AchievementManager.getInstance().unlockAchievement("Completion");
+                if (AchievementManager.getInstance().totalPlayTime < 200) {
+                    AchievementManager.getInstance().unlockAchievement("Speedrun");
+                }
+            }
+        }
+
         model.loadMap(newMapPath);
         this.currentMapPath = newMapPath;
-        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game);
+        this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game, slotIndex);
 
         playMapMusic(newMapPath);
     }
