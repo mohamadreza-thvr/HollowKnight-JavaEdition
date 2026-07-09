@@ -95,7 +95,7 @@ public class GameModel {
     public List<VengefulSpiritModel> getActiveSpells() { return activeSpells; }
     public List<HowlingWraithsModel> getActiveWraiths() { return activeWraiths; }
     public List<CrystalProjectileModel> getCrystalProjectiles() { return crystalProjectiles; }
-    public String getCurrentMapPath() { return currentMapPath; } // ⚠️ گتر اضافه شد
+    public String getCurrentMapPath() { return currentMapPath; }
 
     public boolean isMapChanged() { return mapChanged; }
     public void setMapChanged(boolean mapChanged) { this.mapChanged = mapChanged; }

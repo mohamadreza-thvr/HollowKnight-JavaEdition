@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.hallowKnight.gameplay.core.AudioManager; // ⚠️ ایمپورت اضافه شد
+import com.hallowKnight.gameplay.core.AudioManager;
 
 public class MainMenuScreen implements Screen {
     private MainMenuModel model;
@@ -21,7 +21,6 @@ public class MainMenuScreen implements Screen {
     public void show() {
         Gdx.input.setInputProcessor(view.getStage());
 
-        // پخش موسیقی منوی اصلی به محض ورود به این صفحه
         AudioManager.playMusic("audio/music/menus.mp3");
     }
 

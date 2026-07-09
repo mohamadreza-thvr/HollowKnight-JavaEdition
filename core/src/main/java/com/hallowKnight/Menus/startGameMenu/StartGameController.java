@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
 import com.hallowKnight.gameplay.core.GameScreen;
+import com.hallowKnight.gameplay.core.SaveManager;
 
 public class StartGameController {
     private StartGameModel model;
@@ -26,7 +27,7 @@ public class StartGameController {
     private void setupListeners() {
         for (int i = 0; i < view.getSaveButtons().size(); i++) {
             final TextButton btn = view.getSaveButtons().get(i);
-            final int slotIndex = i;
+            final int buttonIndex = i;
 
             btn.addListener(new ClickListener() {
                 @Override
@@ -41,11 +42,28 @@ public class StartGameController {
 
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Loading / Starting Game from Slot: " + slotIndex);
+                    int targetSlot = buttonIndex;
+
+                    if (buttonIndex == 4) {
+                        targetSlot = 0;
+                        for (int j = 0; j < 4; j++) {
+                            if (!SaveManager.saveExists(j)) {
+                                targetSlot = j;
+                                break;
+                            }
+                        }
+
+                        Gdx.files.local("saves/saveSlot_" + targetSlot + ".json").delete();
+                        System.out.println("Starting a brand NEW game on Slot: " + targetSlot);
+                    } else {
+                        System.out.println("Loading / Starting Game from Slot: " + targetSlot);
+                    }
+
+                    final int finalSlot = targetSlot;
                     Gdx.app.postRunnable(new Runnable() {
                         @Override
                         public void run() {
-                            game.setScreen(new GameScreen(game, slotIndex));
+                            game.setScreen(new GameScreen(game, finalSlot));
                         }
                     });
                 }

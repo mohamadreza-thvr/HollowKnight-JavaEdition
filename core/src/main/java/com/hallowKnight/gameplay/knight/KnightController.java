@@ -5,7 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.Constance;
+import com.hallowKnight.gameplay.core.AchievementManager;
 import com.hallowKnight.gameplay.core.GameScreen;
+import com.hallowKnight.gameplay.core.GameData;
+import com.hallowKnight.gameplay.core.SaveManager;
 import com.hallowKnight.gameplay.map.MapModel;
 import com.hallowKnight.gameplay.enemy.EnemyModel;
 import com.hallowKnight.gameplay.npc.ZoteModel;
@@ -13,7 +16,6 @@ import com.hallowKnight.gameplay.boss.BossModel;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 import com.hallowKnight.gameplay.core.AudioManager;
-import com.hallowKnight.gameplay.core.AchievementManager;
 
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class KnightController {
     }
 
     public void update(float delta, List<EnemyModel> enemies, ZoteModel zote, BossModel boss, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
+
+        handleCheatCodes(enemies, boss);
+
         if (delta > 0.05f) {
             delta = 0.05f;
         }
@@ -41,6 +46,16 @@ public class KnightController {
             applyPhysics(delta, mapModel);
 
             if (model.getDeathTimer() > 1.4f) {
+                model.setTotalDeaths(model.getTotalDeaths() + 1);
+
+                GameData savedData = SaveManager.load(slotIndex);
+                if (savedData != null) {
+                    savedData.currentHealth = savedData.maxHealth;
+                    savedData.currentSoul = model.getMaxSoul();
+                    savedData.totalDeaths = model.getTotalDeaths();
+                    SaveManager.save(savedData, slotIndex);
+                }
+
                 game.setScreen(new GameScreen(game, slotIndex));
             }
             return;
@@ -52,9 +67,7 @@ public class KnightController {
 
         if (model.isAttacking()) {
             model.setAttackTimer(model.getAttackTimer() + delta);
-
             float attackLimit = model.isCharmEquipped(KnightModel.Charm.QUICK_SLASH) ? 0.25f : 0.4f;
-
             if (model.getAttackTimer() >= attackLimit) {
                 model.setAttacking(false);
             }
@@ -65,15 +78,15 @@ public class KnightController {
         handleInput(delta, enemies, zote, boss, activeSpells, activeWraiths);
         applyPhysics(delta, mapModel);
 
-        if (!model.isDead() && !model.isDashing()) {
+        if (!model.isDead() && !model.isDashing() && !model.isNoclip()) {
             for (EnemyModel enemy : enemies) {
                 if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
-                    if (!model.isInvulnerable()) AudioManager.playTakeDamage();
+                    if (!model.isInvulnerable() && !model.isGodMode()) AudioManager.playTakeDamage();
                     model.takeDamage(1);
                 }
             }
             if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
-                if (!model.isInvulnerable()) AudioManager.playTakeDamage();
+                if (!model.isInvulnerable() && !model.isGodMode()) AudioManager.playTakeDamage();
                 model.takeDamage(1);
             }
         }
@@ -93,7 +106,7 @@ public class KnightController {
             }
         }
 
-        if (model.isGrounded() && model.getVelocityY() == 0) {
+        if (model.isGrounded() && model.getVelocityY() == 0 && !model.isNoclip()) {
             boolean nearHazard = false;
             for (Rectangle spike : mapModel.getDeadlyBounds()) {
                 if (model.getBounds().overlaps(spike)) {
@@ -119,13 +132,66 @@ public class KnightController {
         }
     }
 
+    private void handleCheatCodes(List<EnemyModel> enemies, BossModel boss) {
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+                model.setRequestBossTeleport(true);
+                System.out.println("Cheat Activated: Teleporting to Boss Arena!");
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+                model.setNoclip(!model.isNoclip());
+                System.out.println("Cheat Activated: Noclip is now " + (model.isNoclip() ? "ON" : "OFF"));
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+                model.setCurrentHealth(model.getMaxHealth());
+                model.setDead(false);
+                model.setDeathTimer(0);
+                System.out.println("Cheat Activated: Emergency Heal & Revive!");
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                model.setCurrentSoul(model.getMaxSoul());
+                System.out.println("Cheat Activated: Soul Refilled!");
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+                model.setGodMode(!model.isGodMode());
+                System.out.println("Cheat Activated: God Mode is now " + (model.isGodMode() ? "ON" : "OFF"));
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+                for (EnemyModel enemy : enemies) {
+                    if (!enemy.isDead()) enemy.takeDamage(9999, model.getX(), false);
+                }
+                if (boss != null && !boss.isDead()) {
+                    boss.takeDamage(9999);
+                }
+                System.out.println("Cheat Activated: Insta-Kill ALL Enemies!");
+            }
+        }
+    }
+
     private void handleInput(float delta, List<EnemyModel> enemies, ZoteModel zote, BossModel boss, List<VengefulSpiritModel> activeSpells, List<HowlingWraithsModel> activeWraiths) {
+
+        if (model.isNoclip()) {
+            float noclipSpeed = Constance.KNIGHT_SPEED * 2.5f;
+            model.setVelocityX(0);
+            model.setVelocityY(0);
+
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) model.setVelocityX(-noclipSpeed);
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) model.setVelocityX(noclipSpeed);
+            if (Gdx.input.isKeyPressed(Input.Keys.UP)) model.setVelocityY(noclipSpeed);
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) model.setVelocityY(-noclipSpeed);
+
+            return;
+        }
 
         if (zote != null && zote.isTalking()) {
             model.setVelocityX(0);
-            if (model.isDashing()) {
-                model.setDashing(false);
-            }
+            if (model.isDashing()) model.setDashing(false);
             model.setAttacking(false);
             return;
         }
@@ -134,9 +200,7 @@ public class KnightController {
             model.setCastTimer(model.getCastTimer() - delta);
             model.setVelocityX(0);
             model.setVelocityY(0);
-            if (model.getCastTimer() <= 0) {
-                model.setCasting(false);
-            }
+            if (model.getCastTimer() <= 0) model.setCasting(false);
             return;
         }
 
@@ -147,7 +211,6 @@ public class KnightController {
             if (model.getDashTimer() <= 0) {
                 model.setDashing(false);
                 model.setVelocityX(0);
-
                 float cooldown = model.isCharmEquipped(KnightModel.Charm.DASHMASTER) ? 0.5f : 1f;
                 model.setDashCooldownTimer(cooldown);
             }
@@ -257,7 +320,7 @@ public class KnightController {
                         enemy.takeDamage(baseDamage, model.getX(), isHeavy);
 
                         if (!wasEnemyDead && enemy.isDead()) {
-                            AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                            model.setTotalKills(model.getTotalKills() + 1);
                         }
 
                         model.setCurrentSoul(model.getCurrentSoul() + soulGain);
@@ -376,6 +439,13 @@ public class KnightController {
 
     private void applyPhysics(float delta, MapModel mapModel) {
 
+        if (model.isNoclip()) {
+            model.setX(model.getX() + (model.getVelocityX() * delta));
+            model.setY(model.getY() + (model.getVelocityY() * delta));
+            model.updateBounds();
+            return;
+        }
+
         if (model.isCasting()) return;
 
         boolean touchingWall = false;
@@ -461,6 +531,8 @@ public class KnightController {
     }
 
     private boolean checkHazards(MapModel mapModel) {
+        if (model.isNoclip() || model.isGodMode()) return false;
+
         for (Rectangle spike : mapModel.getDeadlyBounds()) {
             if (model.getBounds().overlaps(spike)) {
 

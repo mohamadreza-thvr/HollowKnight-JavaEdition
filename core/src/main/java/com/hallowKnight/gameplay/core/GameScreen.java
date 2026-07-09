@@ -16,7 +16,6 @@ import com.hallowKnight.UIManager;
 import com.hallowKnight.in_game_menus.pause.PauseController;
 import com.hallowKnight.in_game_menus.pause.PauseView;
 import com.hallowKnight.in_game_menus.inventory.InventoryView;
-import com.hallowKnight.gameplay.core.AchievementManager;
 
 public class GameScreen implements Screen {
 
@@ -51,6 +50,11 @@ public class GameScreen implements Screen {
             model.getKnightModel().setCurrentHealth(data.currentHealth);
             model.getKnightModel().setMaxHealth(data.maxHealth);
             model.getKnightModel().setCurrentSoul(data.currentSoul);
+
+            model.getKnightModel().setTotalKills(data.totalKills);
+            model.getKnightModel().setTotalDeaths(data.totalDeaths);
+            model.getKnightModel().setTotalTime(data.totalTime);
+
             if (data.isBossDead && model.getBoss() != null) {
                 model.getBoss().setDead(true);
             }
@@ -99,6 +103,10 @@ public class GameScreen implements Screen {
                         saveData.currentSoul = model.getKnightModel().getCurrentSoul();
                         saveData.currentMapPath = model.getCurrentMapPath();
                         saveData.isBossDead = (model.getBoss() == null || model.getBoss().isDead());
+
+                        saveData.totalKills = model.getKnightModel().getTotalKills();
+                        saveData.totalDeaths = model.getKnightModel().getTotalDeaths();
+                        saveData.totalTime = model.getKnightModel().getTotalTime();
 
                         SaveManager.save(saveData, slotIndex);
                         System.out.println("Game Saved Successfully in Slot: " + slotIndex);
@@ -158,6 +166,8 @@ public class GameScreen implements Screen {
 
         if (currentState == GameState.RUNNING) {
             AchievementManager.getInstance().totalPlayTime += delta;
+
+            model.getKnightModel().setTotalTime(model.getKnightModel().getTotalTime() + delta);
 
             controller.update(delta);
 

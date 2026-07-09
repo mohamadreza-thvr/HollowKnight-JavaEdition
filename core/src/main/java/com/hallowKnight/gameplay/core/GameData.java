@@ -8,5 +8,8 @@ public class GameData {
     public float currentSoul;
     public String currentMapPath;
     public boolean isBossDead;
+    public int totalKills;
+    public int totalDeaths;
+    public float totalTime;
     public GameData() {}
 }

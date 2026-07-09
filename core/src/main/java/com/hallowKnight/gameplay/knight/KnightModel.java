@@ -7,13 +7,13 @@ import java.util.List;
 
 public class KnightModel {
 
-    public int getMaxHealth() {
-        return maxHealth;
-    }
+    private boolean isGodMode = false;
+    private boolean isNoclip = false;
+    private boolean requestBossTeleport = false;
 
-    public void setMaxHealth(int maxHealth) {
-        this.maxHealth = maxHealth;
-    }
+    private int totalKills = 0;
+    private int totalDeaths = 0;
+    private float totalTime = 0f;
 
     public enum Charm {
         SOUL_CATCHER, DASHMASTER, UNBREAKABLE_STRENGTH,
@@ -48,7 +48,6 @@ public class KnightModel {
     private boolean wasGrounded = false;
 
     private boolean isJumping = false;
-
     private boolean canDoubleJump = true;
     private boolean isDoubleJumping = false;
 
@@ -84,10 +83,7 @@ public class KnightModel {
 
     public void updateBounds() { bounds.setPosition(x, y); }
 
-    public boolean isCharmEquipped(Charm charm) {
-        return equippedCharms.contains(charm);
-    }
-
+    public boolean isCharmEquipped(Charm charm) { return equippedCharms.contains(charm); }
     public boolean equipCharm(Charm charm) {
         if (equippedCharms.size() < maxNotches && !equippedCharms.contains(charm)) {
             equippedCharms.add(charm);
@@ -95,14 +91,8 @@ public class KnightModel {
         }
         return false;
     }
-
-    public void unequipCharm(Charm charm) {
-        equippedCharms.remove(charm);
-    }
-
-    public List<Charm> getEquippedCharms() {
-        return equippedCharms;
-    }
+    public void unequipCharm(Charm charm) { equippedCharms.remove(charm); }
+    public List<Charm> getEquippedCharms() { return equippedCharms; }
 
     public float getDashCooldownTimer() { return dashCooldownTimer; }
     public void setDashCooldownTimer(float dashCooldownTimer) { this.dashCooldownTimer = dashCooldownTimer; }
@@ -183,7 +173,7 @@ public class KnightModel {
     public void setAltSlash(boolean altSlash) { this.isAltSlash = altSlash; }
 
     public void heal(int amount) {
-        if (currentHealth < 5 && !isDead) { currentHealth += amount; }
+        if (currentHealth < maxHealth && !isDead) { currentHealth += amount; }
     }
 
     public boolean isCasting() { return isCasting; }
@@ -193,7 +183,29 @@ public class KnightModel {
     public boolean isCastingUp() { return castingUp; }
     public void setCastingUp(boolean c) { this.castingUp = c; }
 
+    public int getTotalKills() { return totalKills; }
+    public void setTotalKills(int totalKills) { this.totalKills = totalKills; }
+
+    public int getTotalDeaths() { return totalDeaths; }
+    public void setTotalDeaths(int totalDeaths) { this.totalDeaths = totalDeaths; }
+
+    public float getTotalTime() { return totalTime; }
+    public void setTotalTime(float totalTime) { this.totalTime = totalTime; }
+
+    public boolean isGodMode() { return isGodMode; }
+    public void setGodMode(boolean godMode) { this.isGodMode = godMode; }
+    public boolean isNoclip() { return isNoclip; }
+    public void setNoclip(boolean noclip) { this.isNoclip = noclip; }
+    public boolean isRequestBossTeleport() { return requestBossTeleport; }
+    public void setRequestBossTeleport(boolean request) { this.requestBossTeleport = request; }
+
+
+    public int getMaxHealth() { return maxHealth; }
+    public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }
+
     public void takeDamage(int amount) {
+        if (isGodMode) return;
+
         if (!isInvulnerable && !isDead) {
             currentHealth -= amount;
             if (currentHealth <= 0) {

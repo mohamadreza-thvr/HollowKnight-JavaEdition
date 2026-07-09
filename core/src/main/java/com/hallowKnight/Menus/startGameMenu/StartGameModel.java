@@ -10,13 +10,16 @@ public class StartGameModel {
 
     public StartGameModel() {
         saveSlots = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+
+        for (int i = 0; i < 4; i++) {
             if (SaveManager.saveExists(i)) {
                 saveSlots.add("Save Slot " + (i + 1) + " (Continue)");
             } else {
-                saveSlots.add("Save Slot " + (i + 1) + " (New Game)");
+                saveSlots.add("Save Slot " + (i + 1) + " (Empty)");
             }
         }
+
+        saveSlots.add("Start New Game");
     }
 
     public List<String> getSaveSlots() {

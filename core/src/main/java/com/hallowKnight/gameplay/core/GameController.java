@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.math.Rectangle;
 import com.hallowKnight.gameplay.boss.BossController;
 import com.hallowKnight.gameplay.boss.BossModel;
-import com.hallowKnight.gameplay.boss.BossState;
 import com.hallowKnight.gameplay.knight.KnightController;
 import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.enemy.EnemyController;
@@ -13,7 +12,7 @@ import com.hallowKnight.gameplay.npc.ZoteController;
 import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 import com.hallowKnight.gameplay.core.AudioManager;
-import com.hallowKnight.gameplay.core.AchievementManager;
+import com.hallowKnight.Menus.endGameMenu.EndGameScreen;
 
 public class GameController {
     private Game game;
@@ -47,6 +46,20 @@ public class GameController {
     public void update(float delta) {
         Rectangle knightBounds = model.getKnightModel().getBounds();
 
+        if (model.getKnightModel().isRequestBossTeleport()) {
+            model.getKnightModel().setRequestBossTeleport(false);
+
+            if (!currentMapPath.equals(BOSS_MAP)) {
+                transitionToMap(BOSS_MAP);
+            }
+
+            if (model.getCurrentMap().getBossSpawn() != null) {
+                model.getKnightModel().setX(model.getCurrentMap().getBossSpawn().x - 200f);
+                model.getKnightModel().setY(model.getCurrentMap().getBossSpawn().y);
+                model.getKnightModel().updateBounds();
+            }
+        }
+
         if (model.getCurrentMap().getGateBounds() != null
             && knightBounds.overlaps(model.getCurrentMap().getGateBounds())) {
             if (currentMapPath.equals(CROSSROAD_MAP)) {
@@ -62,22 +75,10 @@ public class GameController {
             if (currentMapPath.equals(CRYSTAL_MAP)) {
                 transitionToMap(BOSS_MAP);
             } else if (currentMapPath.equals(BOSS_MAP)) {
-                BossModel boss = model.getBoss();
-                boolean isBossDead = (boss == null || boss.isDead());
-                if (isBossDead) {
-                    transitionToMap(CRYSTAL_MAP);
-                } else {
-                    model.getKnightModel().setX(model.getKnightModel().getX() + 20f);
-                    model.getKnightModel().updateBounds();
-                }
+                model.getKnightModel().setX(model.getKnightModel().getX() + 20f);
+                model.getKnightModel().updateBounds();
             }
             return;
-        }
-
-        if(model.getCurrentMap().getBackGateBounds() != null
-            && knightBounds.overlaps(model.getCurrentMap().getBackGateBounds())
-            && model.getBoss().isDead()){
-            transitionToMap(CRYSTAL_MAP);
         }
 
         enemyController.updateEnemies(
@@ -95,6 +96,16 @@ public class GameController {
         BossModel boss = model.getBoss();
         if (boss != null) {
             bossController.update(boss, delta, model.getKnightModel(), model.getCurrentMap());
+
+            if (boss.isDead() && currentMapPath.equals(BOSS_MAP)) {
+                AchievementManager.getInstance().unlockAchievement("Completion");
+                if (AchievementManager.getInstance().totalPlayTime < 7200) {
+                    AchievementManager.getInstance().unlockAchievement("Speedrun");
+                }
+
+                game.setScreen(new EndGameScreen(game, model.getKnightModel(), slotIndex));
+                return;
+            }
 
             Rectangle hitbox = boss.getAttackHitbox();
             if (hitbox.width > 0 && hitbox.overlaps(model.getKnightModel().getBounds())) {
@@ -147,6 +158,7 @@ public class GameController {
 
                     if (!wasEnemyDead && enemy.isDead()) {
                         AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                        model.getKnightModel().setTotalKills(model.getKnightModel().getTotalKills() + 1);
                     }
                 }
             }
@@ -171,6 +183,7 @@ public class GameController {
 
                     if (!wasEnemyDead && enemy.isDead()) {
                         AchievementManager.getInstance().registerEnemyKill(enemy.getClass().getSimpleName());
+                        model.getKnightModel().setTotalKills(model.getKnightModel().getTotalKills() + 1);
                     }
                 }
             }
@@ -184,15 +197,6 @@ public class GameController {
     }
 
     private void transitionToMap(String newMapPath) {
-        if (currentMapPath.equals(BOSS_MAP) && newMapPath.equals(CRYSTAL_MAP)) {
-            if (model.getBoss() != null && model.getBoss().isDead()) {
-                AchievementManager.getInstance().unlockAchievement("Completion");
-                if (AchievementManager.getInstance().totalPlayTime < 200) {
-                    AchievementManager.getInstance().unlockAchievement("Speedrun");
-                }
-            }
-        }
-
         model.loadMap(newMapPath);
         this.currentMapPath = newMapPath;
         this.knightController = new KnightController(model.getKnightModel(), model.getCurrentMap(), game, slotIndex);

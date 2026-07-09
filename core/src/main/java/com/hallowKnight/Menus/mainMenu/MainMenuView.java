@@ -12,7 +12,6 @@ import com.hallowKnight.UIManager;
 public class MainMenuView {
     private Stage stage;
 
-    // متغیرهای مربوط به پس‌زمینه
     private Texture backgroundTexture;
     private Image backgroundImage;
 

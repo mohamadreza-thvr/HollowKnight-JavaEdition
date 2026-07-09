@@ -12,13 +12,11 @@ public class SaveManager {
         json.setOutputType(JsonWriter.OutputType.json);
     }
 
-    // متد ذخیره بازی
     public static void save(GameData data, int slotIndex) {
         FileHandle file = Gdx.files.local("saves/saveSlot_" + slotIndex + ".json");
         file.writeString(json.prettyPrint(data), false);
     }
 
-    // متد لود کردن بازی
     public static GameData load(int slotIndex) {
         FileHandle file = Gdx.files.local("saves/saveSlot_" + slotIndex + ".json");
         if (file.exists()) {

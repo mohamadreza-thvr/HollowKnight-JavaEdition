@@ -46,12 +46,10 @@ public class AchievementsView {
 
             listTable.padTop(250);
 
-            // لود کردن آیکون
             Texture iconTex = new Texture(Gdx.files.internal(data.getIconPath()));
             loadedIcons.add(iconTex);
             Image iconImage = new Image(iconTex);
 
-            // ساخت متون
             Table textTable = new Table();
             Label nameLabel = uiManager.createLabel(data.getTitle());
             Label descLabel = uiManager.createLabel(data.getDescription());
@@ -68,7 +66,6 @@ public class AchievementsView {
             textTable.add(nameLabel).left().row();
             textTable.add(descLabel).left().padTop(5);
 
-            // چیدمان آیکون و متن در یک ردیف
             rowTable.add(iconImage).size(64, 64).padRight(20);
             rowTable.add(textTable).expandX().left();
 
