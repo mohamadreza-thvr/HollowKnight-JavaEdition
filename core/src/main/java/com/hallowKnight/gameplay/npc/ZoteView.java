@@ -2,6 +2,7 @@ package com.hallowKnight.gameplay.npc;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -9,11 +10,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 public class ZoteView {
     private ZoteAnimationManager animationManager;
     private BitmapFont font;
+    private GlyphLayout layout;
+
+    private static final float VISUAL_WIDTH = 140f;
+    private static final float VISUAL_HEIGHT = 140f;
+    private static final float DIALOGUE_OFFSET_Y = 60f;
+    private static final float DIALOGUE_LINE_SPACING = 35f;
 
     public ZoteView() {
         animationManager = new ZoteAnimationManager();
         font = new BitmapFont();
         font.getData().setScale(1.5f);
+        layout = new GlyphLayout();
     }
 
     public void renderWorld(SpriteBatch batch, float delta, ZoteModel zote) {
@@ -21,33 +29,37 @@ public class ZoteView {
 
         TextureRegion frame = animationManager.getCurrentFrame(delta, zote);
 
-        float visualWidth = 140;
-        float visualHeight = 140;
-        float offsetX = (visualWidth - zote.getBounds().width) / 2f;
+        float offsetX = (VISUAL_WIDTH - zote.getBounds().width) / 2f;
 
-        batch.draw(frame, zote.getX() - offsetX, zote.getY() - 20, visualWidth, visualHeight);
+        batch.draw(frame, zote.getX() - offsetX, zote.getY() - 20, VISUAL_WIDTH, VISUAL_HEIGHT);
 
         if (zote.isPlayerInRange() && !zote.isTalking() && zote.getCurrentState() == ZoteState.IDLE) {
             font.setColor(Color.WHITE);
             font.draw(batch, "UP: Talk", zote.getX() - 10, zote.getY() + 150);
         }
+
+        if (zote.isTalking()) {
+            renderDialogueAboveHead(batch, zote);
+        }
     }
 
-    public void renderUI(SpriteBatch batch, ZoteModel zote) {
-        if (zote == null || !zote.isTalking()) return;
+    private void renderDialogueAboveHead(SpriteBatch batch, ZoteModel zote) {
+        float centerX = zote.getX() + zote.getBounds().width / 2f;
+        float baseY = zote.getY() + VISUAL_HEIGHT + DIALOGUE_OFFSET_Y;
 
-        float boxWidth = 800f;
-        float boxHeight = 150f;
-        float boxX = (1280 - boxWidth) / 2f;
-        float boxY = 50f;
+        font.setColor(Color.GRAY);
+        drawCentered(batch, "Zote The Mighty:", centerX, baseY + DIALOGUE_LINE_SPACING * 2);
 
-        batch.begin();
         font.setColor(Color.WHITE);
-        font.draw(batch, "Zote The Mighty:", boxX + 20, boxY + boxHeight - 20);
-        font.draw(batch, zote.getCurrentDisplayLine(), boxX + 40, boxY + boxHeight - 70);
+        drawCentered(batch, zote.getCurrentDisplayLine(), centerX, baseY + DIALOGUE_LINE_SPACING);
+
         font.setColor(Color.YELLOW);
-        font.draw(batch, "[ENTER]", boxX + boxWidth - 100, boxY + 30);
-        batch.end();
+        drawCentered(batch, "[ENTER]", centerX, baseY - 20f);
+    }
+
+    private void drawCentered(SpriteBatch batch, String text, float centerX, float y) {
+        layout.setText(font, text);
+        font.draw(batch, text, centerX - layout.width / 2f, y);
     }
 
     public void dispose() {

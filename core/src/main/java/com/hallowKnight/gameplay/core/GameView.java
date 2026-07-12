@@ -142,8 +142,6 @@ public class GameView {
         batch.begin();
         hudView.render(batch, delta);
         batch.end();
-
-        zoteView.renderUI(batch, model.getZote());
     }
 
     public void resize(int width, int height) {

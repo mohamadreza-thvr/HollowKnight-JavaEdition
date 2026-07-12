@@ -4,8 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.hallowKnight.Constance;
 import com.hallowKnight.gameplay.core.AchievementManager;
+import com.hallowKnight.gameplay.core.GameModel;
 import com.hallowKnight.gameplay.core.GameScreen;
 import com.hallowKnight.gameplay.core.GameData;
 import com.hallowKnight.gameplay.core.SaveManager;
@@ -17,13 +19,18 @@ import com.hallowKnight.gameplay.spells.HowlingWraithsModel;
 import com.hallowKnight.gameplay.spells.VengefulSpiritModel;
 import com.hallowKnight.gameplay.core.AudioManager;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class KnightController {
     private Game game;
     private KnightModel model;
     private MapModel mapModel;
     private int slotIndex;
+
+    private Set<EnemyModel> sharpShadowHitEnemies = new HashSet<>();
+    private boolean sharpShadowHitBoss = false;
 
     public KnightController(KnightModel model, MapModel mapModel, Game game, int slotIndex) {
         this.model = model;
@@ -47,14 +54,27 @@ public class KnightController {
 
             if (model.getDeathTimer() > 1.4f) {
                 model.setTotalDeaths(model.getTotalDeaths() + 1);
+                MapModel initialMap = new MapModel(GameModel.INITIAL_MAP_PATH);
+                Vector2 initialSpawn = initialMap.getKnightSpawn();
 
                 GameData savedData = SaveManager.load(slotIndex);
-                if (savedData != null) {
-                    savedData.currentHealth = savedData.maxHealth;
-                    savedData.currentSoul = model.getMaxSoul();
-                    savedData.totalDeaths = model.getTotalDeaths();
-                    SaveManager.save(savedData, slotIndex);
+                if (savedData == null) {
+                    savedData = new GameData();
+                    savedData.maxHealth = model.getMaxHealth();
+                    savedData.totalKills = model.getTotalKills();
+                    savedData.totalTime = model.getTotalTime();
+                    savedData.isBossDead = false;
                 }
+
+                savedData.currentMapPath = GameModel.INITIAL_MAP_PATH;
+                savedData.playerX = initialSpawn.x;
+                savedData.playerY = initialSpawn.y;
+                savedData.currentHealth = savedData.maxHealth;
+                savedData.currentSoul = model.getMaxSoul();
+                savedData.totalDeaths = model.getTotalDeaths();
+
+                SaveManager.save(savedData, slotIndex);
+                initialMap.dispose();
 
                 game.setScreen(new GameScreen(game, slotIndex));
             }
@@ -217,13 +237,17 @@ public class KnightController {
 
             if (model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) {
                 for (EnemyModel enemy : enemies) {
-                    if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())) {
+                    if (!enemy.isDead() && model.getBounds().overlaps(enemy.getBounds())
+                        && !sharpShadowHitEnemies.contains(enemy)) {
                         enemy.takeDamage(1, model.getX(), false);
+                        sharpShadowHitEnemies.add(enemy);
                     }
                 }
 
-                if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())) {
+                if (boss != null && !boss.isDead() && model.getBounds().overlaps(boss.getBounds())
+                    && !sharpShadowHitBoss) {
                     boss.takeDamage(1);
+                    sharpShadowHitBoss = true;
                 }
             }
             return;
@@ -252,6 +276,9 @@ public class KnightController {
             model.setDashing(true);
             model.setCanDash(false);
             model.setDashTimer(0.3f);
+
+            sharpShadowHitEnemies.clear();
+            sharpShadowHitBoss = false;
 
             float dashSpeed = Constance.KNIGHT_SPEED * 2.5f;
             if (model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) {

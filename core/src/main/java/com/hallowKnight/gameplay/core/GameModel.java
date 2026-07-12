@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameModel {
+    public static final String INITIAL_MAP_PATH = "maps/crossroad map/map.tmx";
+
     private KnightModel knightModel;
     private MapModel currentMap;
     private ZoteModel zote;
@@ -34,7 +36,7 @@ public class GameModel {
         activeWraiths = new ArrayList<>();
         crystalProjectiles = new ArrayList<>();
 
-        loadMap("maps/crossroad map/map.tmx");
+        loadMap(INITIAL_MAP_PATH);
     }
 
     public void loadMap(String mapPath) {

@@ -21,8 +21,8 @@ public class KnightModel {
         SHARP_SHADOW, VOID_HEART
     }
 
-    private int maxHealth = 10;
-    private int currentHealth = 10;
+    private int maxHealth = 5;
+    private int currentHealth = 5;
     private boolean isInvulnerable = false;
     private float invulnerabilityTimer = 0f;
 

@@ -25,6 +25,7 @@ public class KnightAnimationManager {
     private Animation<TextureRegion> dashAnimation;
     private Animation<TextureRegion> sharpShadowDashAnimation;
     private Animation<TextureRegion> deathAnimation;
+    private Animation<TextureRegion> screamAnimation;
 
     private Animation<TextureRegion> blastEffectAnimation;
 
@@ -80,6 +81,8 @@ public class KnightAnimationManager {
         deathAnimation = createSpriteSheetAnimation("animation/Death.png", 18, 1, 0.08f);
         sharpShadowDashAnimation = createSpriteSheetAnimation("animation/Shadow Dash.png", 11, 1, 0.15f);
 
+        screamAnimation = createSpriteSheetAnimation("animation/Scream.png", 7, 1, 0.65f / 7f);
+
         slashAnimation = createSpriteSheetAnimation("animation/Slash.png", 5, 1, 0.08f);
         slashAltAnimation = createSpriteSheetAnimation("animation/SlashAlt.png", 5, 1, 0.08f);
         upSlashAnimation = createSpriteSheetAnimation("animation/UpSlash.png", 5, 1, 0.08f);
@@ -131,7 +134,7 @@ public class KnightAnimationManager {
         }
         else if (model.isCasting()) {
             if (model.isCastingUp()) {
-                currentAnim = lookUpAnimation;
+                currentAnim = screamAnimation;
                 animationTime = 0.65f - model.getCastTimer();
             } else {
                 currentAnim = focusAnimation;

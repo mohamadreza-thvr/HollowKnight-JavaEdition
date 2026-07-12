@@ -24,15 +24,18 @@ public class ZoteModel {
     private String currentDisplayLine = "";
 
     public String[] mainDialogues = {
-        "I am Zote the Mighty, a knight of great renown!",
-        "How dare you interrupt me?!",
-        "Step aside, I have important quests to fulfill."
+        "Hmm? What do you want, cur? Have you come to laugh at me as well?\n" +
+            "Fools! Did you never consider that being trapped in this cage was precisely what I intended?!",
+        "Yes, by all means, release me into your arena!",
+        "I am Zote the Mighty! And as soon as I draw my nail, 'Life Ender', your laughter will turn into terror!"
     };
 
     public String[] precepts = {
-        "Precept 1: Always Win Your Battles.",
-        "Precept 2: Never Let Them Laugh at You.",
-        "Precept 3: Always Be Rested."
+        "Leave me be, you lowly worm! I must rest before my great battle. Pray we do not meet in the arena...",
+        "\tHmm? Are you lost in these dark tunnels? I don't care.\n" +
+            "No, I won't lead you out. I know the way, due to my powerful memory, but I only travel alone. Begone.",
+        "\tSo, the kingdom was hiding this dark nest full of deadly predators. Well, now the deadliest predator of all is here...\n" +
+            "...Zote the Mighty!"
     };
 
     public ZoteModel(float x, float y) {
