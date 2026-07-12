@@ -3,7 +3,9 @@ package com.hallowKnight;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
@@ -16,6 +18,12 @@ public class Main extends Game {
 
     private ShapeRenderer globalShapeRenderer;
 
+    private static final String CURSOR_IMAGE_PATH = "Cursor.png";
+    private static final int CURSOR_HOTSPOT_X = 0;
+    private static final int CURSOR_HOTSPOT_Y = 0;
+
+    private Cursor customCursor;
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -23,8 +31,42 @@ public class Main extends Game {
 
         AudioManager.loadSFX();
 
+        setCustomCursor();
+
         mainMenuScreen = new MainMenuScreen(this);
         setScreen(mainMenuScreen);
+    }
+
+    private void setCustomCursor() {
+
+        Pixmap originalPixmap = new Pixmap(Gdx.files.internal(CURSOR_IMAGE_PATH));
+
+        int po2Width = nextPowerOfTwo(originalPixmap.getWidth());
+        int po2Height = nextPowerOfTwo(originalPixmap.getHeight());
+
+        Pixmap cursorPixmap = originalPixmap;
+        if (po2Width != originalPixmap.getWidth() || po2Height != originalPixmap.getHeight()) {
+            cursorPixmap = new Pixmap(po2Width, po2Height, originalPixmap.getFormat());
+            cursorPixmap.setFilter(Pixmap.Filter.BiLinear);
+            cursorPixmap.drawPixmap(
+                originalPixmap,
+                0, 0, originalPixmap.getWidth(), originalPixmap.getHeight(),
+                0, 0, po2Width, po2Height
+            );
+            originalPixmap.dispose();
+        }
+
+        customCursor = Gdx.graphics.newCursor(cursorPixmap, CURSOR_HOTSPOT_X, CURSOR_HOTSPOT_Y);
+        Gdx.graphics.setCursor(customCursor);
+        cursorPixmap.dispose();
+    }
+
+    private static int nextPowerOfTwo(int value) {
+        int result = 1;
+        while (result < value) {
+            result <<= 1;
+        }
+        return result;
     }
 
     @Override
@@ -53,6 +95,9 @@ public class Main extends Game {
         AudioManager.dispose();
         if (globalShapeRenderer != null) {
             globalShapeRenderer.dispose();
+        }
+        if (customCursor != null) {
+            customCursor.dispose();
         }
     }
 }
