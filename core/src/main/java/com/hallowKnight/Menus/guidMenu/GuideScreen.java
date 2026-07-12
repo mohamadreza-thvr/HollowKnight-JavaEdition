@@ -10,12 +10,18 @@ public class GuideScreen implements Screen {
     private GuideView view;
     private Game game;
     private GuideController controller;
+    private Screen previousScreen;
 
     public GuideScreen(Game game) {
+        this(game, null);
+    }
+
+    public GuideScreen(Game game, Screen previousScreen) {
+        this.game = game;
+        this.previousScreen = previousScreen;
         model = new GuideModel();
         view = new GuideView(model);
-        this.game = game;
-        controller = new GuideController(model, view, game);
+        controller = new GuideController(model, view, game, previousScreen);
     }
 
     @Override

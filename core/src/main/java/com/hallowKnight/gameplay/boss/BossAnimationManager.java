@@ -61,13 +61,14 @@ public class BossAnimationManager {
     }
 
     public TextureRegion getCurrentFrame(BossModel boss, float delta) {
-        if (boss.getHitReactTimer() > 0 &&
-            (boss.getCurrentState() == BossState.STUN ||
-                boss.getCurrentState() == BossState.STUN_RECOVER ||
-                boss.getCurrentState() == BossState.DEATH_LAND ||
-                boss.isDead())) {
 
-            return deathHit.getKeyFrame(boss.getHitReactStateTime(), false);
+        if (boss.getHitReactTimer() > 0) {
+            boolean isAliveStun = (!boss.isDead() && (boss.getCurrentState() == BossState.STUN || boss.getCurrentState() == BossState.STUN_RECOVER));
+            boolean isDeadBody = (boss.isDead() && boss.getCurrentState() == BossState.STUN);
+
+            if (isAliveStun || isDeadBody) {
+                return deathHit.getKeyFrame(boss.getHitReactStateTime(), false);
+            }
         }
 
         float t = boss.getStateTimer();
@@ -101,7 +102,7 @@ public class BossAnimationManager {
             case DEATH_HIT:
                 anim = deathHit; loop = true; break;
             case DEATH_FALL:
-                anim = deathFall; break;
+                anim = deathFall; loop = true; break;
             case DEATH_LAND:
                 anim = deathLand; break;
             default:

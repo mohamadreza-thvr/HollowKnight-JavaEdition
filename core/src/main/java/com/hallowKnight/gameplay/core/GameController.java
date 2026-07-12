@@ -28,6 +28,7 @@ public class GameController {
     private final String BOSS_MAP      = "maps/boss map/boss.tmx";
 
     private String currentMapPath;
+    private float bossDeathTimer = 0f;
 
     public GameController(GameModel model, Game game, int slotIndex) {
         this.game = game;
@@ -98,13 +99,32 @@ public class GameController {
             bossController.update(boss, delta, model.getKnightModel(), model.getCurrentMap());
 
             if (boss.isDead() && currentMapPath.equals(BOSS_MAP)) {
-                AchievementManager.getInstance().unlockAchievement("Completion");
-                if (AchievementManager.getInstance().totalPlayTime < 7200) {
-                    AchievementManager.getInstance().unlockAchievement("Speedrun");
-                }
+                bossDeathTimer += delta;
 
-                game.setScreen(new EndGameScreen(game, model.getKnightModel(), slotIndex));
-                return;
+                if (bossDeathTimer >= 2.5f) {
+                    AchievementManager.getInstance().unlockAchievement("Completion");
+                    if (AchievementManager.getInstance().totalPlayTime < 7200) {
+                        AchievementManager.getInstance().unlockAchievement("Speedrun");
+                    }
+
+                    GameData saveData = new GameData();
+                    saveData.playerX = model.getKnightModel().getX();
+                    saveData.playerY = model.getKnightModel().getY();
+                    saveData.currentHealth = model.getKnightModel().getCurrentHealth();
+                    saveData.maxHealth = model.getKnightModel().getMaxHealth();
+                    saveData.currentSoul = model.getKnightModel().getCurrentSoul();
+                    saveData.currentMapPath = model.getCurrentMapPath();
+                    saveData.isBossDead = true;
+                    saveData.totalKills = model.getKnightModel().getTotalKills();
+                    saveData.totalDeaths = model.getKnightModel().getTotalDeaths();
+                    saveData.totalTime = model.getKnightModel().getTotalTime();
+
+                    SaveManager.save(saveData, slotIndex);
+                    System.out.println("Auto-saved progress before Victory Screen in Slot: " + slotIndex);
+
+                    game.setScreen(new EndGameScreen(game, model.getKnightModel(), slotIndex));
+                    return;
+                }
             }
 
             Rectangle hitbox = boss.getAttackHitbox();

@@ -13,26 +13,36 @@ public class VengefulSpiritView {
     private Animation<TextureRegion> soulBallAnimation;
     private Animation<TextureRegion> shadowBallAnimation;
 
-    private Texture sheet;
+    private Texture soulSheet;
+    private Texture shadowSheet;
+    private KnightModel knightModel;
 
     public VengefulSpiritView(KnightModel model) {
-        if(model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)) sheet = new Texture(Gdx.files.internal("animation/Projectile/SoulBall.png"));
-        else sheet = new Texture(Gdx.files.internal("animation/Projectile/ShadowBall.png"));
+        this.knightModel = model;
 
-
-        int frameWidth = sheet.getWidth() / 4;
-        TextureRegion[][] tmp = TextureRegion.split(sheet, frameWidth, sheet.getHeight());
-        TextureRegion[] frames = new TextureRegion[4];
+        soulSheet = new Texture(Gdx.files.internal("animation/Projectile/SoulBall.png"));
+        TextureRegion[][] tmpSoul = TextureRegion.split(soulSheet, soulSheet.getWidth() / 4, soulSheet.getHeight());
+        TextureRegion[] soulFrames = new TextureRegion[4];
         for (int i = 0; i < 4; i++) {
-            frames[i] = tmp[0][i];
+            soulFrames[i] = tmpSoul[0][i];
         }
+        soulBallAnimation = new Animation<>(0.1f, soulFrames);
 
-        soulBallAnimation = new Animation<>(0.1f, frames);
+        shadowSheet = new Texture(Gdx.files.internal("animation/Projectile/ShadowBall.png"));
+        TextureRegion[][] tmpShadow = TextureRegion.split(shadowSheet, shadowSheet.getWidth() / 6, shadowSheet.getHeight());
+        TextureRegion[] shadowFrames = new TextureRegion[6];
+        for (int i = 0; i < 6; i++) {
+            shadowFrames[i] = tmpShadow[0][i];
+        }
+        shadowBallAnimation = new Animation<>(0.1f, shadowFrames);
     }
 
     public void render(SpriteBatch batch, List<VengefulSpiritModel> activeSpells) {
+        boolean isVoid = knightModel.isCharmEquipped(KnightModel.Charm.VOID_HEART);
+        Animation<TextureRegion> currentAnim = isVoid ? shadowBallAnimation : soulBallAnimation;
+
         for (VengefulSpiritModel spell : activeSpells) {
-            TextureRegion frame = soulBallAnimation.getKeyFrame(spell.getStateTime(), false);
+            TextureRegion frame = currentAnim.getKeyFrame(spell.getStateTime(), true);
 
             if (frame.isFlipX() == spell.isFacingRight()) {
                 frame.flip(true, false);
@@ -49,6 +59,7 @@ public class VengefulSpiritView {
     }
 
     public void dispose() {
-        if (sheet != null) sheet.dispose();
+        if (soulSheet != null) soulSheet.dispose();
+        if (shadowSheet != null) shadowSheet.dispose();
     }
 }

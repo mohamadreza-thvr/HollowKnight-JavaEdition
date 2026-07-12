@@ -8,17 +8,25 @@ public class PauseController {
 
     public interface PauseListener {
         void onContinueClicked();
+        void onGuideClicked();
         void onSettingsClicked();
         void onQuitClicked();
     }
 
-    public PauseController(PauseView view, PauseListener listener) {
+    public PauseController(PauseView view, final PauseListener listener) {
         this.view = view;
 
         view.getContinueButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 listener.onContinueClicked();
+            }
+        });
+
+        view.getGuideButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                listener.onGuideClicked();
             }
         });
 

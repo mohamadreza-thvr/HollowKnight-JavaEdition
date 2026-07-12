@@ -23,6 +23,7 @@ public class KnightAnimationManager {
 
     private Animation<TextureRegion> focusAnimation;
     private Animation<TextureRegion> dashAnimation;
+    private Animation<TextureRegion> sharpShadowDashAnimation;
     private Animation<TextureRegion> deathAnimation;
 
     private Animation<TextureRegion> blastEffectAnimation;
@@ -77,6 +78,7 @@ public class KnightAnimationManager {
 
         dashAnimation = createSpriteSheetAnimation("animation/Dash.png", 12, 1, 0.1f);
         deathAnimation = createSpriteSheetAnimation("animation/Death.png", 18, 1, 0.08f);
+        sharpShadowDashAnimation = createSpriteSheetAnimation("animation/Shadow Dash.png", 11, 1, 0.15f);
 
         slashAnimation = createSpriteSheetAnimation("animation/Slash.png", 5, 1, 0.08f);
         slashAltAnimation = createSpriteSheetAnimation("animation/SlashAlt.png", 5, 1, 0.08f);
@@ -139,9 +141,10 @@ public class KnightAnimationManager {
         }
         else if (model.isDashing()) {
             if(model.isCharmEquipped(KnightModel.Charm.SHARP_SHADOW)){
+                currentAnim = sharpShadowDashAnimation;
+            } else {
                 currentAnim = dashAnimation;
             }
-            else currentAnim = dashAnimation;
         }
         else if (model.isAttacking()) {
             if (model.getAttackDirection() == 1) {

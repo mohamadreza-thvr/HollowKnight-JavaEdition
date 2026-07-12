@@ -9,6 +9,9 @@ public class SettingsModel {
     private float brightness;
     private String currentLanguage;
 
+    private float lastMusicVolume;
+    private float lastSfxVolume;
+
     public final float DEFAULT_SFX_VOLUME = 0.8f;
 
     public SettingsModel() {
@@ -18,6 +21,9 @@ public class SettingsModel {
         this.sfxVolume = prefs.getFloat("sfxVol", DEFAULT_SFX_VOLUME);
         this.brightness = prefs.getFloat("brightness", 1.0f);
         this.currentLanguage = prefs.getString("language", "English");
+
+        this.lastMusicVolume = this.musicVolume > 0 ? this.musicVolume : 0.5f;
+        this.lastSfxVolume = this.sfxVolume > 0 ? this.sfxVolume : DEFAULT_SFX_VOLUME;
     }
 
     public float getMusicVolume() { return musicVolume; }
@@ -31,4 +37,10 @@ public class SettingsModel {
 
     public String getCurrentLanguage() { return currentLanguage; }
     public void setCurrentLanguage(String currentLanguage) { this.currentLanguage = currentLanguage; }
+
+    public float getLastMusicVolume() { return lastMusicVolume; }
+    public void setLastMusicVolume(float lastMusicVolume) { this.lastMusicVolume = lastMusicVolume; }
+
+    public float getLastSfxVolume() { return lastSfxVolume; }
+    public void setLastSfxVolume(float lastSfxVolume) { this.lastSfxVolume = lastSfxVolume; }
 }

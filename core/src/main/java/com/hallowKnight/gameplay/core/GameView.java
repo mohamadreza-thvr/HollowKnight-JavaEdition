@@ -27,7 +27,7 @@ public class GameView {
     private MapView mapView;
 
     private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
+
 
     private KnightView knightView;
     private ZoteView zoteView = new ZoteView();
@@ -50,13 +50,12 @@ public class GameView {
         this.hudView = new HudView(model.getKnightModel());
 
         this.batch = new SpriteBatch();
-        this.shapeRenderer = new ShapeRenderer();
 
         this.knightView = new KnightView(model.getKnightModel());
         this.enemyView = new EnemyView();
         this.bossView  = new BossView();
         this.spellView = new VengefulSpiritView(model.getKnightModel());
-        this.wraithsView = new HowlingWraithsView();
+        this.wraithsView = new HowlingWraithsView(model.getKnightModel());
     }
 
     public void render(float delta) {
@@ -137,59 +136,14 @@ public class GameView {
 
         batch.end();
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 
-        shapeRenderer.setColor(Color.RED);
-        for (Rectangle solid : model.getCurrentMap().getSolidBounds())
-            shapeRenderer.rect(solid.x, solid.y, solid.width, solid.height);
-
-        shapeRenderer.setColor(Color.YELLOW);
-        for (Rectangle deadly : model.getCurrentMap().getDeadlyBounds())
-            shapeRenderer.rect(deadly.x, deadly.y, deadly.width, deadly.height);
-
-        shapeRenderer.setColor(Color.PURPLE);
-        for (EnemyModel enemy : model.getEnemies()) {
-            Rectangle r = enemy.getBounds();
-            shapeRenderer.rect(r.x, r.y, r.width, r.height);
-        }
-
-        if (boss != null) {
-            shapeRenderer.setColor(Color.ORANGE);
-            Rectangle br = boss.getBounds();
-            shapeRenderer.rect(br.x, br.y, br.width, br.height);
-
-            Rectangle bh = boss.getAttackHitbox();
-            if (bh.width > 0) {
-                shapeRenderer.setColor(Color.RED);
-                shapeRenderer.rect(bh.x, bh.y, bh.width, bh.height);
-            }
-        }
-
-        shapeRenderer.setColor(Color.GREEN);
-        Rectangle kr = model.getKnightModel().getBounds();
-        shapeRenderer.rect(kr.x, kr.y, kr.width, kr.height);
-
-        if (model.getZote() != null) {
-            shapeRenderer.setColor(Color.CYAN);
-            Rectangle zr = model.getZote().getBounds();
-            shapeRenderer.rect(zr.x, zr.y, zr.width, zr.height);
-        }
-
-        if (model.getCurrentMap().getCameraZones() != null) {
-            shapeRenderer.setColor(Color.NAVY);
-            for (Rectangle zone : model.getCurrentMap().getCameraZones())
-                shapeRenderer.rect(zone.x, zone.y, zone.width, zone.height);
-        }
-
-        shapeRenderer.end();
 
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.begin();
         hudView.render(batch, delta);
         batch.end();
 
-        zoteView.renderUI(batch, shapeRenderer, model.getZote());
+        zoteView.renderUI(batch, model.getZote());
     }
 
     public void resize(int width, int height) {
@@ -199,7 +153,6 @@ public class GameView {
     public void dispose() {
         background.dispose();
         batch.dispose();
-        shapeRenderer.dispose();
         knightView.dispose();
         zoteView.dispose();
         if (enemyView   != null) enemyView.dispose();

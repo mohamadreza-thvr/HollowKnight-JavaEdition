@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.hallowKnight.Menus.achievements.AchievementData;
+import com.hallowKnight.Menus.guidMenu.GuideScreen;
 import com.hallowKnight.Menus.mainMenu.MainMenuScreen;
 import com.hallowKnight.UIManager;
 import com.hallowKnight.in_game_menus.pause.PauseController;
@@ -55,9 +56,13 @@ public class GameScreen implements Screen {
             model.getKnightModel().setTotalDeaths(data.totalDeaths);
             model.getKnightModel().setTotalTime(data.totalTime);
 
+            AchievementManager.getInstance().totalPlayTime = data.totalTime;
+
             if (data.isBossDead && model.getBoss() != null) {
                 model.getBoss().setDead(true);
             }
+        } else {
+            AchievementManager.getInstance().totalPlayTime = 0f;
         }
 
         controller = new GameController(model, game, slotIndex);
@@ -77,6 +82,16 @@ public class GameScreen implements Screen {
             @Override
             public void onContinueClicked() {
                 resumeGame();
+            }
+
+            @Override
+            public void onGuideClicked() {
+                Gdx.app.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        game.setScreen(new GuideScreen(game, GameScreen.this));
+                    }
+                });
             }
 
             @Override

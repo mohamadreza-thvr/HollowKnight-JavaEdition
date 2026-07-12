@@ -1,5 +1,7 @@
 package com.hallowKnight.gameplay.boss;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -8,6 +10,20 @@ import com.hallowKnight.gameplay.knight.KnightModel;
 import com.hallowKnight.gameplay.map.MapModel;
 
 public class BossController {
+
+    private Sound jumpSound;
+    private Sound landSound;
+    private Sound[] attackSounds;
+
+    public BossController() {
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/boss_jump.wav"));
+        landSound = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/boss_land.wav"));
+
+        attackSounds = new Sound[3];
+        attackSounds[0] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/boss_attack_1.wav"));
+        attackSounds[1] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/boss_attack_2.wav"));
+        attackSounds[2] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/boss_attack_3.wav"));
+    }
 
     public void update(BossModel boss, float delta, KnightModel knight, MapModel map) {
         if (delta > 0.05f) delta = 0.05f;
@@ -202,10 +218,12 @@ public class BossController {
                 boss.setCurrentState(BossState.MACE_SLAM);
                 boss.setVelocityX(0);
                 boss.setAttackDamageDealt(false);
+                playRandomAttackSound();
                 break;
             case CHARGE_RUN:
                 boss.setCurrentState(BossState.RUN_ANTIC);
                 boss.setVelocityX(0);
+                playRandomAttackSound();
                 break;
             case OFFENSIVE_LEAP:
             case LEAP_SLAM:
@@ -221,6 +239,15 @@ public class BossController {
             default:
                 boss.setCurrentState(BossState.IDLE);
                 break;
+        }
+    }
+
+    private void playRandomAttackSound() {
+        if (attackSounds != null && attackSounds.length > 0) {
+            int index = MathUtils.random(attackSounds.length - 1);
+            if (attackSounds[index] != null) {
+                attackSounds[index].play(1.0f);
+            }
         }
     }
 
@@ -316,6 +343,10 @@ public class BossController {
         boss.setCurrentState(BossState.JUMP);
         boss.setStateTimer(0f);
         boss.setGrounded(false);
+
+        if (jumpSound != null) {
+            jumpSound.play(1.0f);
+        }
     }
 
     private void handleJump(BossModel boss, float delta, MapModel map, KnightModel knight) {
@@ -328,10 +359,15 @@ public class BossController {
                 boss.setCurrentState(BossState.MACE_SLAM);
                 boss.setStateTimer(0f);
                 boss.setAttackDamageDealt(false);
+                playRandomAttackSound();
+
+                if (landSound != null) landSound.play(1.0f);
             } else {
                 boss.setCurrentState(BossState.LAND);
                 boss.setStateTimer(0f);
                 boss.triggerCameraShake(6f, 0.25f);
+
+                if (landSound != null) landSound.play(1.0f);
             }
         }
     }
@@ -369,6 +405,8 @@ public class BossController {
                     boss.setVelocityX(0);
                     boss.setVelocityY(0);
                     boss.triggerCameraShake(15f, 0.8f);
+
+                    if (landSound != null) landSound.play(1.0f);
                 }
                 break;
             case DEATH_LAND:
@@ -376,6 +414,10 @@ public class BossController {
                     boss.setCurrentState(BossState.STUN);
                     boss.setStateTimer(0f);
                 }
+                break;
+            case STUN:
+                boss.setVelocityX(0);
+                boss.setVelocityY(0);
                 break;
             default:
                 break;
@@ -429,6 +471,16 @@ public class BossController {
                     boss.setVelocityY(0);
                 }
                 boss.updateBounds();
+            }
+        }
+    }
+
+    public void dispose() {
+        if (jumpSound != null) jumpSound.dispose();
+        if (landSound != null) landSound.dispose();
+        if (attackSounds != null) {
+            for (Sound s : attackSounds) {
+                if (s != null) s.dispose();
             }
         }
     }

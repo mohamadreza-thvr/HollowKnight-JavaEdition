@@ -15,6 +15,7 @@ import com.hallowKnight.UIManager;
 public class PauseView {
     private Stage stage;
     private TextButton continueButton;
+    private TextButton guideButton;
     private TextButton settingsButton;
     private TextButton saveQuitButton;
     private Texture darkOverlay;
@@ -22,7 +23,6 @@ public class PauseView {
     public PauseView() {
         stage = new Stage(new StretchViewport(1280, 720));
         UIManager uiManager = UIManager.getInstance();
-
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0, 0, 0, 0.7f));
@@ -34,7 +34,6 @@ public class PauseView {
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
-        // جدول دکمه‌ها
         Table table = new Table();
         table.setFillParent(true);
 
@@ -43,11 +42,13 @@ public class PauseView {
         title.setColor(Color.LIGHT_GRAY);
 
         continueButton = uiManager.createButton("Continue");
+        guideButton = uiManager.createButton("Guide");
         settingsButton = uiManager.createButton("Settings");
         saveQuitButton = uiManager.createButton("Save & Quit");
 
         table.add(title).padBottom(50).row();
         table.add(continueButton).padBottom(20).row();
+        table.add(guideButton).padBottom(20).row();
         table.add(settingsButton).padBottom(20).row();
         table.add(saveQuitButton).padBottom(20).row();
 
@@ -61,6 +62,7 @@ public class PauseView {
 
     public Stage getStage() { return stage; }
     public TextButton getContinueButton() { return continueButton; }
+    public TextButton getGuideButton() { return guideButton; }
     public TextButton getSettingsButton() { return settingsButton; }
     public TextButton getSaveQuitButton() { return saveQuitButton; }
 

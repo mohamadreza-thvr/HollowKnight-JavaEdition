@@ -59,10 +59,35 @@ public class EnemyController {
 
     private void updateCrystalGuardian(CrystalGuardianModel guardian, float delta, MapModel mapModel, KnightModel knight) {
         float visionRange = 800f;
+
+        float maxLaserLen = 2000f;
+        float actualLaserLen = maxLaserLen;
+        float laserOriginX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width : guardian.getX();
+        float laserY = guardian.getY() + 30f;
+        float laserThickness = 50f;
+
+        for (Rectangle solid : mapModel.getSolidBounds()) {
+            if (solid.y < laserY + laserThickness && solid.y + solid.height > laserY) {
+                if (guardian.isFacingRight() && solid.x > laserOriginX) {
+                    float distToWall = solid.x - laserOriginX;
+                    if (distToWall < actualLaserLen) {
+                        actualLaserLen = distToWall;
+                    }
+                } else if (!guardian.isFacingRight() && solid.x + solid.width < laserOriginX) {
+                    float distToWall = laserOriginX - (solid.x + solid.width);
+                    if (distToWall < actualLaserLen) {
+                        actualLaserLen = distToWall;
+                    }
+                }
+            }
+        }
+
+        guardian.setLaserLength(actualLaserLen);
+
         if (guardian.isFacingRight()) {
-            guardian.getVisionBounds().set(guardian.getX() + guardian.getBounds().width, guardian.getY(), visionRange, guardian.getBounds().height);
+            guardian.getVisionBounds().set(laserOriginX, guardian.getY(), actualLaserLen, guardian.getBounds().height);
         } else {
-            guardian.getVisionBounds().set(guardian.getX() - visionRange, guardian.getY(), visionRange, guardian.getBounds().height);
+            guardian.getVisionBounds().set(laserOriginX - actualLaserLen, guardian.getY(), actualLaserLen, guardian.getBounds().height);
         }
 
         if (guardian.getCurrentState() == EnemyState.IDLE) {
@@ -81,9 +106,8 @@ public class EnemyController {
 
             if (guardian.getStateTimer() >= 0.35f && !guardian.isLaserFiredThisTurn()) {
                 guardian.setLaserFiredThisTurn(true);
-
-                float laserX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width : guardian.getX() - visionRange;
-                guardian.getLaserBounds().set(laserX, guardian.getY() + 30f, visionRange, 50f);
+                float laserStartX = guardian.isFacingRight() ? laserOriginX : laserOriginX - actualLaserLen;
+                guardian.getLaserBounds().set(laserStartX, laserY, actualLaserLen, laserThickness);
 
                 if (guardian.getLaserBounds().overlaps(knight.getBounds())) {
                     knight.takeDamage(1);

@@ -2,6 +2,7 @@ package com.hallowKnight.gameplay.npc;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hallowKnight.gameplay.knight.KnightModel;
@@ -12,6 +13,15 @@ public class ZoteController {
     private static final float ROLL_SPEED = 500f;
     private static final float ATTACK_SPEED = 250f;
     private MapModel mapModel;
+
+    private Sound[] zoteVoices;
+
+    public ZoteController() {
+        zoteVoices = new Sound[3];
+        zoteVoices[0] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/zote_talk_1.wav"));
+        zoteVoices[1] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/zote_talk_2.wav"));
+        zoteVoices[2] = Gdx.audio.newSound(Gdx.files.internal("audio/sfx/zote_talk_3.wav"));
+    }
 
     public void update(ZoteModel zote, float delta, KnightModel knight) {
         if (delta > 0.05f) {
@@ -148,11 +158,28 @@ public class ZoteController {
             int randomPrecept = (int)(Math.random() * zote.precepts.length);
             zote.setCurrentDisplayLine(zote.precepts[randomPrecept]);
         }
+
+        playRandomZoteVoice();
+    }
+
+    private void playRandomZoteVoice() {
+        if (zoteVoices != null && zoteVoices.length > 0) {
+            int randomIndex = (int) (Math.random() * zoteVoices.length);
+            zoteVoices[randomIndex].play(1.0f);
+        }
     }
 
     private void endDialogue(ZoteModel zote) {
         zote.setTalking(false);
         zote.setCurrentState(ZoteState.IDLE);
         zote.setStateTimer(0f);
+    }
+
+    public void dispose() {
+        if (zoteVoices != null) {
+            for (Sound sound : zoteVoices) {
+                if (sound != null) sound.dispose();
+            }
+        }
     }
 }

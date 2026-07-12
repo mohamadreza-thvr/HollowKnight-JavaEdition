@@ -48,7 +48,7 @@ public class AchievementManager {
         } else {
             achievements = new ArrayList<>();
             achievements.add(new AchievementData("Completion", "Finish the game.", "Achievements/achievement_pure_completion.png", false));
-            achievements.add(new AchievementData("Speedrun", "Finish the game under 2 hours.", "Achievements/speedRun.jpg", false));
+            achievements.add(new AchievementData("Speedrun", "Finish the game under 2 minute.", "Achievements/speedRun.jpg", false));
             achievements.add(new AchievementData("True Hunter", "Kill all types of enemies.", "Achievements/achievement_Hunter_Journal.png", false));
             achievements.add(new AchievementData("Defeat False Knight", "Defeat the False Knight.", "Achievements/achievement_false_knight #00002521.png", false));
             achievements.add(new AchievementData("First Blood", "Kill your first enemy.", "Achievements/achievement_gg__0003__sly.png", false));

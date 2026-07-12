@@ -22,6 +22,9 @@ public class SettingsView {
     private TextButton languageButton;
     private TextButton backButton;
 
+    private TextButton muteMusicButton;
+    private TextButton muteSfxButton;
+
     public SettingsView(SettingsModel model) {
 
         stage = new Stage(new StretchViewport(1280, 720));
@@ -53,21 +56,29 @@ public class SettingsView {
         resetSfxButton = uiManager.createButton("Reset SFX");
         resetSfxButton.getLabel().setFontScale(0.8f);
 
+        muteMusicButton = uiManager.createButton(model.getMusicVolume() == 0 ? "Unmute" : "Mute");
+        muteMusicButton.getLabel().setFontScale(0.8f);
+
+        muteSfxButton = uiManager.createButton(model.getSfxVolume() == 0 ? "Unmute" : "Mute");
+        muteSfxButton.getLabel().setFontScale(0.8f);
+
         languageButton = uiManager.createButton("Language: " + model.getCurrentLanguage());
 
-        // چیدمان Music
         centerTable.add(musicLabel).padRight(20).padBottom(20);
-        centerTable.add(musicSlider).width(300).padBottom(20).colspan(2).row();
+        centerTable.add(musicSlider).width(300).padBottom(20);
+        centerTable.add(muteMusicButton).padLeft(20).padBottom(20).row();
 
         centerTable.add(sfxLabel).padRight(20).padBottom(20);
         centerTable.add(sfxSlider).width(300).padBottom(20);
-        centerTable.add(resetSfxButton).padLeft(20).padBottom(20).row();
 
-        // چیدمان Brightness
+        Table sfxButtonsTable = new Table();
+        sfxButtonsTable.add(muteSfxButton).padRight(10);
+        sfxButtonsTable.add(resetSfxButton);
+        centerTable.add(sfxButtonsTable).padLeft(20).padBottom(20).row();
+
         centerTable.add(brightnessLabel).padRight(20).padBottom(40);
         centerTable.add(brightnessSlider).width(300).padBottom(40).colspan(2).row();
 
-        // چیدمان Language
         centerTable.add(languageButton).colspan(3).padTop(20).row();
 
         stage.addActor(centerTable);
@@ -101,4 +112,6 @@ public class SettingsView {
     public TextButton getResetSfxButton() { return resetSfxButton; }
     public TextButton getLanguageButton() { return languageButton; }
     public TextButton getBackButton() { return backButton; }
+    public TextButton getMuteMusicButton() { return muteMusicButton; }
+    public TextButton getMuteSfxButton() { return muteSfxButton; }
 }

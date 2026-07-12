@@ -28,18 +28,66 @@ public class SettingsController {
         view.getMusicSlider().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                model.setMusicVolume(view.getMusicSlider().getValue());
-                AudioManager.setMusicVolume(view.getMusicSlider().getValue());
+                float val = view.getMusicSlider().getValue();
+                model.setMusicVolume(val);
+                AudioManager.setMusicVolume(val);
+
+                view.getMuteMusicButton().setText(val == 0 ? "Unmute" : "Mute");
+                if (val > 0) model.setLastMusicVolume(val);
+
                 System.out.println("Music Vol: " + model.getMusicVolume());
+            }
+        });
+
+        view.getMuteMusicButton().addListener(new ClickListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                view.getMuteMusicButton().getLabel().setColor(Color.YELLOW);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                view.getMuteMusicButton().getLabel().setColor(Color.WHITE);
+            }
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (view.getMusicSlider().getValue() > 0) {
+                    view.getMusicSlider().setValue(0);
+                } else {
+                    view.getMusicSlider().setValue(model.getLastMusicVolume());
+                }
             }
         });
 
         view.getSfxSlider().addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                model.setSfxVolume(view.getSfxSlider().getValue());
-                AudioManager.setSFXVolume(view.getSfxSlider().getValue());
+                float val = view.getSfxSlider().getValue();
+                model.setSfxVolume(val);
+                AudioManager.setSFXVolume(val);
+
+                view.getMuteSfxButton().setText(val == 0 ? "Unmute" : "Mute");
+                if (val > 0) model.setLastSfxVolume(val);
+
                 System.out.println("SFX Vol: " + model.getSfxVolume());
+            }
+        });
+
+        view.getMuteSfxButton().addListener(new ClickListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                view.getMuteSfxButton().getLabel().setColor(Color.YELLOW);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                view.getMuteSfxButton().getLabel().setColor(Color.WHITE);
+            }
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (view.getSfxSlider().getValue() > 0) {
+                    view.getSfxSlider().setValue(0);
+                } else {
+                    view.getSfxSlider().setValue(model.getLastSfxVolume());
+                }
             }
         });
 
@@ -56,8 +104,6 @@ public class SettingsController {
             public void clicked(InputEvent event, float x, float y) {
                 float defaultVol = model.DEFAULT_SFX_VOLUME;
                 view.getSfxSlider().setValue(defaultVol);
-                model.setSfxVolume(defaultVol);
-                AudioManager.setSFXVolume(defaultVol);
                 System.out.println("SFX Reset to Default: " + defaultVol);
             }
         });
@@ -67,7 +113,6 @@ public class SettingsController {
             public void changed(ChangeEvent event, Actor actor) {
                 float newBrightness = view.getBrightnessSlider().getValue();
                 model.setBrightness(newBrightness);
-
                 Gdx.app.getPreferences("HollowKnightSettings").putFloat("brightness", newBrightness).flush();
                 System.out.println("Brightness Saved: " + newBrightness);
             }

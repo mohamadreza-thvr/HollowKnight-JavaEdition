@@ -229,7 +229,7 @@ public class KnightController {
             return;
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S) && model.getCurrentSoul() >= 33) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.A) && model.getCurrentSoul() >= 33) {
             model.setCurrentSoul(model.getCurrentSoul() - 33);
             model.setCasting(true);
 
@@ -419,7 +419,7 @@ public class KnightController {
             if (model.getCurrentHealth() < model.getMaxHealth() && model.getCurrentSoul() >= 20) {
                 model.setFocusTimer(model.getFocusTimer() + delta);
 
-                float healLimit = model.isCharmEquipped(KnightModel.Charm.QUICK_FOCUS) ? 0.6f : 1.0f;
+                float healLimit = model.isCharmEquipped(KnightModel.Charm.QUICK_FOCUS) ? 1f : 1.5f;
 
                 if (model.getFocusTimer() >= healLimit) {
                     model.setCurrentSoul(model.getCurrentSoul() - 20);

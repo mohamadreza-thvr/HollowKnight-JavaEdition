@@ -33,23 +33,13 @@ public class ZoteView {
         }
     }
 
-    public void renderUI(SpriteBatch batch, ShapeRenderer shape, ZoteModel zote) {
+    public void renderUI(SpriteBatch batch, ZoteModel zote) {
         if (zote == null || !zote.isTalking()) return;
 
         float boxWidth = 800f;
         float boxHeight = 150f;
         float boxX = (1280 - boxWidth) / 2f;
         float boxY = 50f;
-
-        shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(0, 0, 0, 0.8f);
-        shape.rect(boxX, boxY, boxWidth, boxHeight);
-        shape.end();
-
-        shape.begin(ShapeRenderer.ShapeType.Line);
-        shape.setColor(Color.WHITE);
-        shape.rect(boxX, boxY, boxWidth, boxHeight);
-        shape.end();
 
         batch.begin();
         font.setColor(Color.WHITE);

@@ -78,7 +78,7 @@ public class MapModel {
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawlid")) {
                     crawlidSpawns.add(new Vector2(objX, objY));
                 }
-                else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Crawler")) {
+                else if (cleanName != null && cleanName.equalsIgnoreCase("Crawler")) {
                     crawlerSpawns.add(new Vector2(objX, objY));
                 }
                 else if (cleanName != null && cleanName.equalsIgnoreCase("Spawn Mosquito")) {

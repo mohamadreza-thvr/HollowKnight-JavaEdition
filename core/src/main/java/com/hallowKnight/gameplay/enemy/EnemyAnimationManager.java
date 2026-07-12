@@ -60,7 +60,7 @@ public class EnemyAnimationManager {
 
         guardianIdle = createSpriteSheet("animation/Crystallized/Idle.png", 5, 0.3f);
         guardianRun = createSpriteSheet("animation/Crystallized/Run.png", 6, 0.2f);
-        guardianShoot = createSpriteSheet("animation/Crystallized/Shoot.png", 7, 0.1f); // 0.7 ثانیه برای شلیک
+        guardianShoot = createSpriteSheet("animation/Crystallized/Shoot.png", 7, 0.1f);
         guardianTurn = createSpriteSheet("animation/Crystallized/Turn.png", 3, 0.2f);
         guardianEvade = createSpriteSheet("animation/Crystallized/Evade.png", 7, 0.2f);
         guardianDeathAir = createSpriteSheet("animation/Crystallized/Death Air.png", 3, 0.2f);

@@ -58,9 +58,10 @@ public class EnemyView {
                 if (guardian.getCurrentState() == EnemyState.ANTICIPATE) {
                     TextureRegion laserFrame = animationManager.getGuardianLaserFrame(guardian.getStateTimer());
 
-                    float laserLen = 800f;
+                    float laserLen = guardian.getLaserLength();
                     float laserThickness = 80f;
-                    float laserX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width - 20f : guardian.getX() - laserLen + 20f;
+
+                    float laserX = guardian.isFacingRight() ? guardian.getX() + guardian.getBounds().width : guardian.getX() - laserLen;
                     float laserY = guardian.getY() + 50f;
 
                     boolean isFlipped = laserFrame.isFlipX();

@@ -1,6 +1,7 @@
 package com.hallowKnight.Menus.guidMenu;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,11 +12,13 @@ public class GuideController {
     private GuideModel model;
     private GuideView view;
     private Game game;
+    private Screen previousScreen;
 
-    public GuideController(GuideModel model, GuideView view, Game game) {
+    public GuideController(GuideModel model, GuideView view, Game game, Screen previousScreen) {
         this.model = model;
         this.view = view;
         this.game = game;
+        this.previousScreen = previousScreen;
         setupListeners();
     }
 
@@ -33,8 +36,13 @@ public class GuideController {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Returning to Main Menu...");
-                game.setScreen(new MainMenuScreen(game));
+                if (previousScreen != null) {
+                    System.out.println("Returning to Game...");
+                    game.setScreen(previousScreen);
+                } else {
+                    System.out.println("Returning to Main Menu...");
+                    game.setScreen(new MainMenuScreen(game));
+                }
             }
         });
     }

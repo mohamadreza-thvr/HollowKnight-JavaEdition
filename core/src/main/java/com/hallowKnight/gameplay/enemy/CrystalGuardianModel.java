@@ -10,6 +10,7 @@ public class CrystalGuardianModel extends EnemyModel {
     private boolean laserFiredThisTurn = false;
     private Rectangle visionBounds;
     private Rectangle laserBounds;
+    private float laserLength = 0f;
 
     public CrystalGuardianModel(float x, float y) {
         super(x, y, 80, 100, 6);
@@ -32,4 +33,7 @@ public class CrystalGuardianModel extends EnemyModel {
 
     public Rectangle getVisionBounds() { return visionBounds; }
     public Rectangle getLaserBounds() { return laserBounds; }
+
+    public float getLaserLength() { return laserLength; }
+    public void setLaserLength(float laserLength) { this.laserLength = laserLength; }
 }
