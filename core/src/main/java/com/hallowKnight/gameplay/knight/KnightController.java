@@ -440,7 +440,7 @@ public class KnightController {
             }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.A) && model.isGrounded()) {
+        if (Gdx.input.isKeyPressed(Input.Keys.S) && model.isGrounded()) {
             model.setVelocityX(0);
             model.setFocusing(true);
             if (model.getCurrentHealth() < model.getMaxHealth() && model.getCurrentSoul() >= 20) {

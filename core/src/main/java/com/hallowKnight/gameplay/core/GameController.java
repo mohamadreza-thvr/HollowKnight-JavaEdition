@@ -100,6 +100,7 @@ public class GameController {
 
             if (boss.isDead() && currentMapPath.equals(BOSS_MAP)) {
                 bossDeathTimer += delta;
+                AudioManager.playMusic("audio/music/victory_theme.mp3");
 
                 if (bossDeathTimer >= 2.5f) {
                     AchievementManager.getInstance().unlockAchievement("Completion");
