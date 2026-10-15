@@ -1,0 +1,11 @@
+{
+"playerX": 3347.564,
+"playerY": 3157.333,
+"currentHealth": 3,
+"maxHealth": 5,
+"currentSoul": 12,
+"currentMapPath": "maps/crossroad map/map.tmx",
+"isBossDead": true,
+"totalKills": 3,
+"totalTime": 92.04217
+}

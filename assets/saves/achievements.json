@@ -1,0 +1,35 @@
+[
+{
+	"class": "com.hallowKnight.Menus.achievements.AchievementData",
+	"title": "Completion",
+	"description": "Finish the game.",
+	"iconPath": "Achievements/achievement_pure_completion.png",
+	"isUnlocked": true
+},
+{
+	"class": "com.hallowKnight.Menus.achievements.AchievementData",
+	"title": "Speedrun",
+	"description": "Finish the game under 2 minute.",
+	"iconPath": "Achievements/speedRun.jpg",
+	"isUnlocked": true
+},
+{
+	"class": "com.hallowKnight.Menus.achievements.AchievementData",
+	"title": "True Hunter",
+	"description": "Kill all types of enemies.",
+	"iconPath": "Achievements/achievement_Hunter_Journal.png"
+},
+{
+	"class": "com.hallowKnight.Menus.achievements.AchievementData",
+	"title": "Defeat False Knight",
+	"description": "Defeat the False Knight.",
+	"iconPath": "Achievements/achievement_false_knight #00002521.png"
+},
+{
+	"class": "com.hallowKnight.Menus.achievements.AchievementData",
+	"title": "First Blood",
+	"description": "Kill your first enemy.",
+	"iconPath": "Achievements/achievement_gg__0003__sly.png",
+	"isUnlocked": true
+}
+]
